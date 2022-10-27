@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    <link rel="shortcut icon" href="https://meysh.cc/source/svg/logo.svg">
+    <title>BT的聊天室</title>
+    <style>
+      body { background-color:rgb(255, 255, 255);margin: 0; padding-bottom: 3rem; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; }
+
+      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
+      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
+      #input:focus { outline: none; }
+      #form > button { background: #333; border: none; padding: 0 1rem; margin: 0.25rem; border-radius: 3px; outline: none; color: #fff; }
+
+      #messages { list-style-type: none; margin: 0; padding: 0; }
+      #messages > li { padding: 0.5rem 1rem; }
+      #messages > li:nth-child(odd) { background: #efefef; }
+
+      .input {border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem;}
+      .modal {display: none;position: fixed;z-index: 1;left: 0;top: 0;width: 100%; height: 100%;overflow: auto; background-color: rgb(0,0,0); background-color: rgba(0,0,0,0.4); }
+      .modal-content {background-color: #fefefe;margin: 15% auto; padding: 20px;border: 1px solid #888;width: 50%; }
+      .next {background: #333;border: none;padding: 0.3rem 1rem;margin: 0.25rem auto;border-radius: 3px;outline: none;color: #fff;}
+      .close {display:none;color: #aaa;float: right;font-size: 28px;font-weight: bold;}
+      .close:hover,.close:focus {color: black;text-decoration: none;cursor: pointer;}
+      .card {bottom:0;height:100%;width:100%;right:0;}
+      .main {background-color:white;display:none;width:50%;}
+      .desk {display:none;position:fixed;right:0px;top:0px;background-color:rgb(214, 214, 214);width:50%;height:100%;z-index:-100}
+      .option {margin:20px;background-color:#efefef;border-radius:8px;padding:10px;font-size:28px;animation:"appear 1s 1";display:none;position:relative;z-index:-99;}
+      #headline {position:sticky;top:0px;font-size:20px;display:block;width:100%;padding:7px 0px;background-color:rgb(199, 199, 199);}
+      @keyframes appear{
+        from {right:-800px;}
+        to {right:0px;}
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <a style="position:sticky;top:0px;font-size:20px;display:block;width:100%;padding:7px 0px;background-color:rgb(199, 199, 199);text-align:center">牌桌列表(<span id="number"></span>)</a>
+      <a href="/" style="color:black;text-decoration:none;position:fixed;top:0px;right:0px;font-size:20px;display:block;width:70px;padding:7px 10px;background-color:rgb(199, 199, 199);">聊天室</a>
+      <div id="roomlist">
+        <div style="margin:30px;background-color:rgb(199, 199, 199);border-radius:8px;padding:20px;font-size:20px;">bt233的牌桌(<span id='0'>1</span>)</div>
+      </div>
+      <a id="create" style="position:absolute;bottom:0px;font-size:20px;display:block;width:100%;padding:7px 0px;background-color:rgb(199, 199, 199);text-align:center">新建牌桌</a>
+    </div>
+    <div class="main">
+      <a id="headline"><span id="roomid" class="" style="margin:0px 10px" onclick="does('leave')">离开</span></a>
+      <ul id="messages"></ul>
+      <form id="form" action="">
+        <a id="username" style="min-width:10px;font-size:20px;margin:5px 7px"></a>
+        <input id="input" autocomplete="off" />
+        <button>Send</button>
+      </form>
+    </div>
+    <div class="desk">
+      <div id="yours" style="height:160px">1</div>
+      <div style="margin:30px">
+        <a id="op1" class="option" onclick=""></a>
+        <a id="op2" class="option" onclick=""></a>
+      </div>
+      <div id="mine" style="height:160px">22222222222222</div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var messages = document.getElementById('messages');
+      var form = document.getElementById('form');
+      var input = document.getElementById('input');
+      var username = document.getElementById('username');
+      var main = document.querySelector('.main');
+      var card = document.querySelector('.card');
+      var desk = document.querySelector('.desk');
+      var roomlist = document.getElementById('roomlist');
+      var op1 = document.getElementById('op1');
+      var op2 = document.getElementById('op2');
+      var create = document.getElementById('create');
+
+      document.getElementById('username').innerText = getCookie('username');
+      if(getCookie('username') == undefined)
+      {
+        header("location:/");
+      }
+      else
+      {
+        var socket = io();
+        joinTo('list','normal')
+        socket.emit('room','getlist');
+      }
+    
+      create.onclick=function() {
+        socket.emit('room','create');
+        inRoom();
+      }
+      form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+          socket.emit('message', input.value);
+          input.value = '';
+        }
+      });
+
+      socket.on('reload', function(msg) {
+        location.reload();
+      });
+      socket.on('message', function(msg) {
+        var item = document.createElement('li');
+        item.textContent = msg;
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+      });
+      socket.on('number', function(type,value) {
+        if (type=='normal')
+        {document.getElementById('number').innerText=value;}
+        else
+        {document.getElementById(type).innerText=value;}
+      });
+      socket.on('room', function(action,id,host,amount) {
+        switch (action) {
+          case 'list':
+            func="joinTo("+id+",'21p')";
+            roomlist.innerHTML+='<div onclick="'+func+'" style="margin:30px;background-color:rgb(199, 199, 199);border-radius:8px;padding:20px;font-size:20px;">'+host+'的牌桌(<span id="'+id+'">'+amount+'</span>)</div>';
+            break;
+          case 'close':
+            location.reload();
+            break;
+          case 'exist':
+            create.innerText='回到牌桌';
+            create.onclick=function() {
+              joinTo(id,'21p');
+            };
+            break;
+          case 'join':
+            document.getElementById('roomid').className=id;
+            if (host=='true') {
+              func="does('close')";
+              document.getElementById('headline').innerHTML+='<span style="margin:0px 10px" onclick="'+func+'">解散</span>';
+            }
+            break;
+        }
+      });
+
+      function getCookie(cookieName) {
+        const strCookie = document.cookie;
+        const cookieList = strCookie.split(';');
+        for (let i = 0; i < cookieList.length; i++) {
+          const arr = cookieList[i].split('=');
+          if (cookieName === arr[0].trim()) {
+            return arr[1];
+          }
+        }
+      }
+      function does(action) {
+        switch (action) {
+          case 'leave':
+            location.reload();
+            break;
+          case 'close':
+            socket.emit('room','close',document.getElementById('roomid').className);
+            location.reload();
+            break;
+        }
+      }
+      function joinTo(id,type) {
+        socket.emit('join',id,getCookie('username'),type);
+        if (type=='21p') {
+          inRoom();
+        }
+      }
+      function inRoom() {
+        card.style.display='none';
+        main.style.display='block';
+        desk.style.display='block';
+        op1.innerHTML='加入牌局';
+        op1.style.display='inline';
+        op1.style.animation = "appear 0.7s 1";
+        op1.onclick=sitDown();
+      }
+      function sitDown() {
+        
+      }
+    </script>
+  </body>
+</html>
