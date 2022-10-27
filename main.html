@@ -82,12 +82,8 @@
           }
           else
           {
-            var socket = io();
             document.cookie="username="+inputname.value+"; expires=Thu, 18 Dec 2043 12:00:00 GMT";
-            socket.emit('join','main',getCookie('username'),'normal');
-            document.getElementById('username').innerText=inputname.value;
-            inputname.value="";
-            modal.style.display = "none";
+            location.reload();
           }
         }
       }
@@ -95,8 +91,7 @@
       {
         var socket = io();
         socket.emit('join','main',getCookie('username'),'normal');
-      }
-      span.onclick = function() {
+        span.onclick = function() {
         var judgeFn = new RegExp(/\s+/g);
         if (inputname.value.length>12 || inputname.value.length<2)
         {
@@ -116,6 +111,7 @@
           inputname.value="";
           modal.style.display = "none";
         }
+      }
       }
       username.onclick = function() {
         modal.style.display = "block";
