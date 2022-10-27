@@ -95,7 +95,7 @@ io.on('connection', (socket) => {
 io.use((socket, next) => {
   setTimeout(() => {
     next(/*console.log(6)*/);
-  }, 100);
+  }, 1);
   socket.on('disconnect', () => {
     if (socket.data.room!=undefined) {
       io.in(socket.data.room).emit('number','normal',(--rooms[socket.data.room][1]));
