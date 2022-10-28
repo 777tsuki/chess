@@ -146,8 +146,10 @@
             headline.style.top='0%';
           }
           else {
-            desk.style.height='50%';
-            headline.style.top='50%';
+            if (desk.offsetLeft==0) {
+              desk.style.height='50%';
+              headline.style.top='50%';
+            }
           }
         })
       })
