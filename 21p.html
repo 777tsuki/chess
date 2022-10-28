@@ -141,15 +141,13 @@
       window.addEventListener('load', function() {
         window.addEventListener('resize', function() {
           desk.style.top='0%';
-          if (window.innerWidth > 1000) {
-            desk.style.height='100%';
-            headline.style.top='0%';
+          if (desk.offsetLeft==0) {
+            desk.style.height='50%';
+            headline.style.top='50%';
           }
           else {
-            if (desk.offsetLeft==0) {
-              desk.style.height='50%';
-              headline.style.top='50%';
-            }
+            desk.style.height='100%';
+            headline.style.top='0%';
           }
         })
       })
