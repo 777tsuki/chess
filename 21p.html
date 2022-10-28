@@ -102,6 +102,7 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
+      var width1=0,width2=0;
       var messages = document.getElementById('messages');
       var form = document.getElementById('form');
       var input = document.getElementById('input');
@@ -140,14 +141,17 @@
       });
       window.addEventListener('load', function() {
         window.addEventListener('resize', function() {
-          desk.style.top='0%';
-          if (desk.offsetLeft==0) {
-            desk.style.height='50%';
-            headline.style.top='50%';
-          }
-          else {
-            desk.style.height='100%';
-            headline.style.top='0%';
+          width2=window.innerWidth;
+          if (width1!=width2) {
+            if (desk.offsetLeft==0) {
+              desk.style.height='50%';
+              headline.style.top='50%';
+            }
+            else {
+              desk.style.height='100%';
+              headline.style.top='0%';
+            }
+            width1=width2;
           }
         })
       })
