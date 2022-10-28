@@ -24,27 +24,48 @@
       .close:hover,.close:focus {color: black;text-decoration: none;cursor: pointer;}
       .card {bottom:0;height:100%;width:100%;right:0;}
       .main {background-color:white;display:none;width:50%;}
-      .desk {display:none;position:fixed;right:0px;top:0px;background-color:rgb(214, 214, 214);width:50%;height:100%;z-index:-100}
+      .desk {animation:out 0.7s 1;display:none;position:fixed;right:0px;top:0px;background-color:rgb(214, 214, 214);width:50%;height:100%;z-index:-100}
       .option {margin:20px;background-color:#efefef;border-radius:8px;padding:10px;font-size:28px;animation:"appear 1s 1";display:none;position:relative;z-index:-99;}
-      #headline {position:fixed;top:0px;font-size:20px;display:block;width:100%;padding:7px 0px;background-color:rgb(199, 199, 199);}
+      #headline {position:fixed;top:0px;font-size:20px;display:block;width:50%;padding:7px 0px;background-color:rgb(199, 199, 199);}
+      #switch {display:none}
       @keyframes appear{
         from {right:-800px;}
         to {right:0px;}
       }
+      @keyframes switch_in{
+        from {top:0%;}
+        to {top:-50%;}
+      }
+      @keyframes switch_out{
+        from {top:-50%;}
+        to {top:0%;}
+      }
+      @keyframes headline_in{
+        from {top:50%;}
+        to {top:0%;}
+      }
+      @keyframes headline_out{
+        from {top:0%;}
+        to {top:50%;}
+      }
       @media screen and (max-width: 1000px) {
         #headline {
           top:50%;
+          width:100%;
+          z-index:100;
         }
         .desk {
-          max-height:40%;
-          position:sticky;
-          z-index:100;
+          height:50%;
+          position:fixed;
+          z-index:50;
           width:100%;
         }
         .main {
-          top:50%;
           height:50%;
           width:100%;
+        }
+        #switch {
+          display:unset;
         }
       }
     </style>
@@ -59,7 +80,6 @@
       <a id="create" style="position:absolute;bottom:0px;font-size:20px;display:block;width:100%;padding:7px 0px;background-color:rgb(199, 199, 199);text-align:center">新建牌桌</a>
     </div>
     <div class="main">
-      <a id="headline"><span id="roomid" class="" style="margin:0px 10px" onclick="does('leave')">离开</span></a>
       <div class="desk">
         <div id="yours" style="height:115px">1</div>
         <div style="margin:30px">
@@ -68,14 +88,17 @@
         </div>
         <div id="mine" style="height:115px">22222222222222</div>
       </div>
-      <ul id="messages"></ul>
+      <a id="headline">
+        <span id="roomid" class="" style="margin:0px 10px" onclick="does('leave')">离开</span>
+        <span id="switch" style="margin:0px 10px;float:right;" onclick="switchIt()">折叠</span>
+      </a>
+      <ul id="messages"><span class="blank"></span></ul>
       <form id="form" action="">
         <a id="username" style="min-width:10px;font-size:20px;margin:5px 7px"></a>
         <input id="input" autocomplete="off" />
         <button>Send</button>
       </form>
     </div>
-
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var messages = document.getElementById('messages');
@@ -89,7 +112,8 @@
       var op1 = document.getElementById('op1');
       var op2 = document.getElementById('op2');
       var create = document.getElementById('create');
-
+      var headline=document.getElementById('headline');
+      //初始加载项
       document.getElementById('username').innerText = getCookie('username');
       if(getCookie('username') == undefined)
       {
@@ -101,7 +125,7 @@
         joinTo('list','normal')
         socket.emit('room','getlist');
       }
-    
+      //功能杂项
       create.onclick=function() {
         socket.emit('room','create');
         inRoom();
@@ -113,7 +137,20 @@
           input.value = '';
         }
       });
-
+      window.addEventListener('load', function() {
+        window.addEventListener('resize', function() {
+          desk.style.top='0%';
+          if (window.innerWidth > 1000) {
+            desk.style.height='100%';
+            headline.style.top='0%';
+          }
+          else {
+            desk.style.height='50%';
+            headline.style.top='50%';
+          }
+        })
+      })
+      //信息接收部分
       socket.on('reload', function(type) {
         switch (type) {
           case 'unexist_room':
@@ -137,12 +174,7 @@
       socket.on('room', function(action,id,host,amount) {
         switch (action) {
           case 'list':
-            if (amount==2) {
-              func="alert('人数已满')";
-            }
-            else {
-              func="joinTo("+id+",'21p')";
-            }
+            func="joinTo("+id+",'21p')";
             roomlist.innerHTML+='<div onclick="'+func+'" style="margin:30px;background-color:rgb(199, 199, 199);border-radius:8px;padding:20px;font-size:20px;">'+host+'的牌桌(<span id="'+id+'">'+amount+'</span>)</div>';
             break;
           case 'close':
@@ -163,7 +195,24 @@
             break;
         }
       });
-
+      //函数部分
+      function switchIt() {
+        var it=document.getElementById('switch');
+        if (desk.style.animation.match('out')) {
+          desk.style.animation='switch_in 0.7s 1';
+          desk.style.top='-50%';
+          headline.style.animation='headline_in 0.7s 1';
+          headline.style.top='0%';
+          it.innerText='展开';
+        }
+        else {
+          desk.style.animation='switch_out 0.7s 1';
+          desk.style.top='0%';
+          headline.style.animation='headline_out 0.7s 1';
+          headline.style.top='50%';
+          it.innerText='折叠';
+        }
+      }
       function getCookie(cookieName) {
         const strCookie = document.cookie;
         const cookieList = strCookie.split(';');
@@ -185,7 +234,7 @@
             break;
         }
       }
-      function joinTo(id,type) {
+      function joinTo(id,type,cards) {
         socket.emit('join',id,getCookie('username'),type);
         if (type=='21p') {
           inRoom();

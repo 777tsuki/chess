@@ -68,7 +68,27 @@
       if(getCookie('username') == undefined)
       {
         modal.style.display = "block";
-        span.onclick = function() {
+      }
+      else
+      {
+        var socket = io();
+        socket.emit('join','main',getCookie('username'),'normal');
+      }
+      username.onclick = function() {
+        modal.style.display = "block";
+        x.style.display = "block";
+        window.onclick = function(event) {
+          if (event.target == modal) {
+            modal.style.display = "none";
+            inputname.value="";
+          }
+        }
+      }
+      x.onclick = function() {
+        modal.style.display = "none";
+        inputname.value="";
+      }
+      span.onclick = function() {
           var judgeFn = new RegExp(/\s+/g);
           if (inputname.value.length>12 || inputname.value.length<2)
           {
@@ -86,47 +106,6 @@
             location.reload();
           }
         }
-      }
-      else
-      {
-        var socket = io();
-        socket.emit('join','main',getCookie('username'),'normal');
-        span.onclick = function() {
-        var judgeFn = new RegExp(/\s+/g);
-        if (inputname.value.length>12 || inputname.value.length<2)
-        {
-          alert('太长或太短');
-          inputname.value="";
-        }
-        else if (judgeFn.test(inputname.value))
-        {
-          alert('不要空格');
-          inputname.value="";
-        }
-        else
-        {
-          document.cookie="username="+inputname.value+"; expires=Thu, 18 Dec 2043 12:00:00 GMT";
-          socket.emit('join','none',getCookie('username'),'normal');
-          document.getElementById('username').innerText=inputname.value;
-          inputname.value="";
-          modal.style.display = "none";
-        }
-      }
-      }
-      username.onclick = function() {
-        modal.style.display = "block";
-        x.style.display = "block";
-        window.onclick = function(event) {
-          if (event.target == modal) {
-            modal.style.display = "none";
-            inputname.value="";
-          }
-        }
-      }
-      x.onclick = function() {
-        modal.style.display = "none";
-        inputname.value="";
-      }
     
       form.addEventListener('submit', function(e) {
         e.preventDefault();

@@ -44,7 +44,7 @@ io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（
         io.in(socket.data.room).emit('message',socket.data.username+'进来了');
       }
       else {
-        if (info[socket.data.username]!=undefined) {
+        if (info[socket.data.username]!=undefined) {//已经建过房间的情况
           io.in(socket.id).emit('room','exist',info[socket.data.username]);
         }
       }
