@@ -33,12 +33,12 @@
         to {right:0px;}
       }
       @keyframes switch_in{
-        from {top:0%;}
-        to {top:-50%;}
+        from {height:50%;}
+        to {height:0%;}
       }
       @keyframes switch_out{
-        from {top:-50%;}
-        to {top:0%;}
+        from {height:0%;}
+        to {height:50%;}
       }
       @keyframes headline_in{
         from {top:50%;}
@@ -56,6 +56,7 @@
         }
         .desk {
           height:50%;
+          overflow:hidden;
           position:fixed;
           z-index:50;
           width:100%;
@@ -200,14 +201,14 @@
         var it=document.getElementById('switch');
         if (desk.style.animation.match('out')) {
           desk.style.animation='switch_in 0.7s 1';
-          desk.style.top='-50%';
+          desk.style.height='0%';
           headline.style.animation='headline_in 0.7s 1';
           headline.style.top='0%';
           it.innerText='展开';
         }
         else {
           desk.style.animation='switch_out 0.7s 1';
-          desk.style.top='0%';
+          desk.style.height='50%';
           headline.style.animation='headline_out 0.7s 1';
           headline.style.top='50%';
           it.innerText='折叠';
