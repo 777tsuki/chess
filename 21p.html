@@ -26,10 +26,26 @@
       .main {background-color:white;display:none;width:50%;}
       .desk {display:none;position:fixed;right:0px;top:0px;background-color:rgb(214, 214, 214);width:50%;height:100%;z-index:-100}
       .option {margin:20px;background-color:#efefef;border-radius:8px;padding:10px;font-size:28px;animation:"appear 1s 1";display:none;position:relative;z-index:-99;}
-      #headline {position:sticky;top:0px;font-size:20px;display:block;width:100%;padding:7px 0px;background-color:rgb(199, 199, 199);}
+      #headline {position:fixed;top:0px;font-size:20px;display:block;width:100%;padding:7px 0px;background-color:rgb(199, 199, 199);}
       @keyframes appear{
         from {right:-800px;}
         to {right:0px;}
+      }
+      @media screen and (max-width: 1000px) {
+        #headline {
+          top:50%;
+        }
+        .desk {
+          max-height:40%;
+          position:sticky;
+          z-index:100;
+          width:100%;
+        }
+        .main {
+          top:50%;
+          height:50%;
+          width:100%;
+        }
       }
     </style>
   </head>
@@ -44,6 +60,14 @@
     </div>
     <div class="main">
       <a id="headline"><span id="roomid" class="" style="margin:0px 10px" onclick="does('leave')">离开</span></a>
+      <div class="desk">
+        <div id="yours" style="height:120px">1</div>
+        <div style="margin:30px">
+          <a id="op1" class="option" onclick=""></a>
+          <a id="op2" class="option" onclick=""></a>
+        </div>
+        <div id="mine" style="height:120px">22222222222222</div>
+      </div>
       <ul id="messages"></ul>
       <form id="form" action="">
         <a id="username" style="min-width:10px;font-size:20px;margin:5px 7px"></a>
@@ -51,14 +75,7 @@
         <button>Send</button>
       </form>
     </div>
-    <div class="desk">
-      <div id="yours" style="height:160px">1</div>
-      <div style="margin:30px">
-        <a id="op1" class="option" onclick=""></a>
-        <a id="op2" class="option" onclick=""></a>
-      </div>
-      <div id="mine" style="height:160px">22222222222222</div>
-    </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
       var messages = document.getElementById('messages');
@@ -97,7 +114,12 @@
         }
       });
 
-      socket.on('reload', function(msg) {
+      socket.on('reload', function(type) {
+        switch (type) {
+          case 'unexist_room':
+            alert('牌桌已被解散');
+            break;
+        }
         location.reload();
       });
       socket.on('message', function(msg) {
@@ -115,7 +137,12 @@
       socket.on('room', function(action,id,host,amount) {
         switch (action) {
           case 'list':
-            func="joinTo("+id+",'21p')";
+            if (amount==2) {
+              func="alert('人数已满')";
+            }
+            else {
+              func="joinTo("+id+",'21p')";
+            }
             roomlist.innerHTML+='<div onclick="'+func+'" style="margin:30px;background-color:rgb(199, 199, 199);border-radius:8px;padding:20px;font-size:20px;">'+host+'的牌桌(<span id="'+id+'">'+amount+'</span>)</div>';
             break;
           case 'close':
@@ -129,7 +156,7 @@
             break;
           case 'join':
             document.getElementById('roomid').className=id;
-            if (host=='true') {
+            if (host=='true') {//你是不是房主
               func="does('close')";
               document.getElementById('headline').innerHTML+='<span style="margin:0px 10px" onclick="'+func+'">解散</span>';
             }

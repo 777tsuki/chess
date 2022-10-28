@@ -18,33 +18,40 @@ rooms={'main':['host',0],'list':['host',0]};
 var info={'user':'roomid'};
 var roomId=1;
 
-io.on('connection', (socket) => {
+io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（笑）
   socket.on('join', (roomid,username,type) => {
-    socket.data.username=username;
-    if (roomid!='none')
-    {
-      if (socket.data.room!=undefined) {
-        socket.leave(socket.data.room);
+    if (rooms[roomid][0]==undefined) {//列表中某个房间突然被解散的情况
+      io.in(socket.id).emit('reload','unexist_room');
+    }
+    else {
+      socket.data.username=username;
+      if (roomid!='none')
+      {
+        if (socket.data.room!=undefined) {//防崩
+          socket.leave(socket.data.room);
+        }
+        socket.join(roomid);
+        socket.data.room=roomid;
+        io.in(roomid).emit('number','normal',(++rooms[roomid][1]));
+        if (roomid==info[socket.data.username]) {//区分是不是房主
+          io.in(socket.id).emit('room','join',roomid,'true');
+        }
+        else {
+          io.in(socket.id).emit('room','join',roomid,'false');
+        }
       }
-      socket.join(roomid);
-      socket.data.room=roomid;
-      io.in(roomid).emit('number','normal',(++rooms[roomid][1]));
-      if (roomid==info[socket.data.username]) {
-        io.in(socket.id).emit('room','join',roomid,'true');
+      if (roomid!='list') {//房间列表，只有在这个界面没有聊天室功能
+        io.in(socket.data.room).emit('message',socket.data.username+'进来了');
       }
       else {
-        io.in(socket.id).emit('room','join',roomid,'false');
+        if (info[socket.data.username]!=undefined) {
+          io.in(socket.id).emit('room','exist',info[socket.data.username]);
+        }
+      }
+      if (type!='normal') {//进入专房等于离开房间列表，人数减一
+        io.in('list').emit('number','normal',(--rooms['list'][1]));
       }
     }
-    if (roomid!='list')
-    {io.in(socket.data.room).emit('message',socket.data.username+'进来了');}
-    else {
-      if (info[socket.data.username]!=undefined) {
-        io.in(socket.id).emit('room','exist',info[socket.data.username]);
-      }
-    }
-    if (type!='normal')
-    {io.in('list').emit('number','normal',(--rooms['list'][1]));}
   });
 });
 io.on('connection', (socket) => {
