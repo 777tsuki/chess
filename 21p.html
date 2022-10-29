@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no">
     <link rel="shortcut icon" href="https://meysh.cc/source/svg/logo.svg">
     <title>BT的聊天室</title>
     <style>
@@ -83,7 +83,7 @@
     <div class="main">
       <div class="desk">
         <div id="yours" style="height:115px">1</div>
-        <div style="margin:30px">
+        <div style="margin:5px">
           <a id="op1" class="option" onclick=""></a>
           <a id="op2" class="option" onclick=""></a>
         </div>
@@ -139,10 +139,10 @@
           input.value = '';
         }
       });
-      window.addEventListener('load', function() {
+      window.addEventListener('load', function() {//治疗使用折叠展开的后遗症
         window.addEventListener('resize', function() {
           width2=window.innerWidth;
-          if (width1!=width2) {
+          if (width1!=width2) {//通过“原宽度”和“现宽度”比较实现监听宽度变化
             if (desk.offsetLeft==0) {
               desk.style.height='50%';
               headline.style.top='50%';
@@ -201,7 +201,7 @@
         }
       });
       //函数部分
-      function switchIt() {
+      function switchIt() {//展开和折叠的动画，初次折叠会失败的bug待修
         var it=document.getElementById('switch');
         if (desk.style.animation.match('out')) {
           desk.style.animation='switch_in 0.7s 1';
