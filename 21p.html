@@ -25,7 +25,7 @@
       .card {bottom:0;height:100%;width:100%;right:0;}
       .main {background-color:white;display:none;width:50%;}
       .desk {animation:out 0.7s 1;display:none;position:fixed;right:0px;top:0px;background-color:rgb(214, 214, 214);width:50%;height:100%;z-index:-100}
-      .option {margin:20px;background-color:#efefef;border-radius:8px;padding:10px;font-size:28px;animation:"appear 1s 1";display:none;position:relative;z-index:-99;}
+      .option {margin:20px;background-color:#efefef;border-radius:8px;padding:10px;font-size:28px;animation:appear 0.7s 1;position:relative;z-index:-99;}
       #headline {position:fixed;top:0px;font-size:20px;display:block;width:50%;padding:7px 0px;background-color:rgb(199, 199, 199);}
       #switch {display:none}
       @keyframes appear{
@@ -49,25 +49,10 @@
         to {top:50%;}
       }
       @media screen and (max-width: 1000px) {
-        #headline {
-          top:50%;
-          width:100%;
-          z-index:100;
-        }
-        .desk {
-          height:50%;
-          overflow:hidden;
-          position:fixed;
-          z-index:50;
-          width:100%;
-        }
-        .main {
-          height:50%;
-          width:100%;
-        }
-        #switch {
-          display:unset;
-        }
+        #headline {top:50%;width:100%;z-index:100;}
+        .desk {height:50%;overflow:hidden;position:fixed;z-index:50;width:100%;}
+        .main {height:50%;width:100%;}
+        #switch {display:unset;}
       }
     </style>
   </head>
@@ -82,12 +67,11 @@
     </div>
     <div class="main">
       <div class="desk">
-        <div id="yours" style="height:115px">1</div>
-        <div style="margin:5px">
-          <a id="op1" class="option" onclick=""></a>
-          <a id="op2" class="option" onclick=""></a>
+        <div id="yours" style="height:115px"><span id="name1" style="margin:20px 20px;font-size:20px">玩家</span></div>
+        <div id="options" style="margin:15px">
+
         </div>
-        <div id="mine" style="height:115px">22222222222222</div>
+        <div id="mine" style="height:115px"><span id="name2" style="margin:30px 20px;font-size:20px">玩家</span></div>
       </div>
       <a id="headline">
         <span id="roomid" class="" style="margin:0px 10px" onclick="does('leave')">离开</span>
@@ -111,10 +95,9 @@
       var card = document.querySelector('.card');
       var desk = document.querySelector('.desk');
       var roomlist = document.getElementById('roomlist');
-      var op1 = document.getElementById('op1');
-      var op2 = document.getElementById('op2');
       var create = document.getElementById('create');
       var headline=document.getElementById('headline');
+      var ops=document.getElementById('options');
       //初始加载项
       document.getElementById('username').innerText = getCookie('username');
       if(getCookie('username') == undefined)
@@ -183,6 +166,7 @@
             roomlist.innerHTML+='<div onclick="'+func+'" style="margin:30px;background-color:rgb(199, 199, 199);border-radius:8px;padding:20px;font-size:20px;">'+host+'的牌桌(<span id="'+id+'">'+amount+'</span>)</div>';
             break;
           case 'close':
+            alert('房间已解散');
             location.reload();
             break;
           case 'exist':
@@ -249,13 +233,11 @@
         card.style.display='none';
         main.style.display='block';
         desk.style.display='block';
-        op1.innerHTML='加入牌局';
-        op1.style.display='inline';
-        op1.style.animation = "appear 0.7s 1";
-        op1.onclick=sitDown();
+        ops.innerHTML+='<a id="op1" class="option" onclick="sitDown()">加入牌局</a>';
       }
       function sitDown() {
-        
+        document.getElementById('name2').innerText=getCookie('username');
+        socket.emit('card','join',getCookie('username'));
       }
     </script>
   </body>

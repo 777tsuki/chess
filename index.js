@@ -4,6 +4,8 @@ const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
 const io = new Server(server);
+var client = require('redis');
+var redis = client.createClient(6379, '127.0.0.1');
 
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/main.html');
