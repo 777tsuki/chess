@@ -121,10 +121,7 @@
         window.scrollTo(0, document.body.scrollHeight);
       });
       socket.on('number', function(type,value) {
-        if (type=='normal')
-        {document.getElementById('number').innerText=value;}
-        else
-        {document.getElementById(type).innerText=value;}
+        document.getElementById('number').innerText=value;
       });
     </script>
   </body>

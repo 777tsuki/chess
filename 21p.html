@@ -153,11 +153,8 @@
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
-      socket.on('number', function(type,value) {
-        if (type=='normal')
-        {document.getElementById('number').innerText=value;}
-        else
-        {document.getElementById(type).innerText=value;}
+      socket.on('number', function(value) {
+        document.getElementById('number').innerText=value;
       });
       socket.on('room', function(action,id,host,amount) {
         switch (action) {
