@@ -120,7 +120,7 @@
         messages.appendChild(item);
         window.scrollTo(0, document.body.scrollHeight);
       });
-      socket.on('number', function(type,value) {
+      socket.on('number', function(value) {
         document.getElementById('number').innerText=value;
       });
     </script>
