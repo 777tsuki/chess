@@ -138,20 +138,21 @@ function room_getlist(userid) {
     }
   });
 }
-async function getid(id,username) {
-  var result=[];
-  await rg('rooms').then(async (value)=>{
-    while (id<=value+1) {
-      await hg(id+'','host').then((host)=>{
-        id=Number(id);
-        if (host==undefined) {
-          result.push(id);
-        }
-      });
-      id++;
+async function getid(id, username) {
+  var result = [];
+  let rooms = await rg('rooms');
+
+  for (; id < rooms; id++) {
+    let host = await hg(id.toString(), 'host')
+    id = Number(id);
+    // FIXME: Do you mean '==='?
+    if (host == undefined) {
+      result.push(id);
     }
-  })
-  await redis.hSet('hoster',username,result[0]);
+  }
+
+  // FIXME: awaited but no return value.
+  await redis.hSet('hoster', username, result[0]);
 }
 
 async function rs(key,value) {
