@@ -139,17 +139,18 @@ function room_getlist(userid) {
   });
 }
 async function getid(id, username) {
-  var result = [];
+  id = Number(id);
   let rooms = await rg('rooms');
 
-  for (; id < rooms; id++) {
-    let host = await hg(id.toString(), 'host')
-    id = Number(id);
+  // Create an array with length of (rooms - id), and increments from id, i.e.,
+  // [id, id + 1, id + 2, ..., rooms - 1].
+  let roomsList = Array(rooms - id).map((_, index) => id + index);
+  // await all hg()s to be done.
+  let result = await Promise.all(roomsList.filter(async (id) => {
+    let host = await hg(id.toString(), 'host');
     // FIXME: Do you mean '==='?
-    if (host == undefined) {
-      result.push(id);
-    }
-  }
+    return (host == undefined);
+  }));
 
   // FIXME: awaited but no return value.
   await redis.hSet('hoster', username, result[0]);
