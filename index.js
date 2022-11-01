@@ -17,6 +17,9 @@ app.get('/', (req, res) => {
 app.get('/21p', (req, res) => {
   res.sendFile(__dirname + '/21p.html');
 });
+app.get('/21pm', (req, res) => {
+  res.sendFile(__dirname + '/21pm.html');
+});
 
 beginning();
 

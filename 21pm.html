@@ -23,11 +23,10 @@
       .close {display:none;color: #aaa;float: right;font-size: 28px;font-weight: bold;}
       .close:hover,.close:focus {color: black;text-decoration: none;cursor: pointer;}
       .card {bottom:0;height:100%;width:100%;right:0;}
-      .main {background-color:white;display:none;width:50%;}
-      .desk {animation:out 0.7s 1;display:none;position:fixed;right:0px;top:0px;background-color:rgb(214, 214, 214);width:50%;height:100%;z-index:-100}
+      .main {background-color:white;display:none;height:50%;width:100%;}
+      .desk {animation:out 0.7s 1;display:none;right:0px;top:0px;background-color:rgb(214, 214, 214);height:50%;overflow:hidden;position:fixed;z-index:50;width:100%;}
       .option {margin:20px;background-color:#efefef;border-radius:8px;padding:10px;font-size:28px;animation:appear 0.7s 1;position:relative;z-index:-99;}
-      #headline {position:fixed;top:0px;font-size:20px;display:block;width:50%;padding:7px 0px;background-color:rgb(199, 199, 199);}
-      #switch {display:none}
+      #headline {position:fixed;top:50%;font-size:20px;display:block;width:100%;padding:7px 0px;background-color:rgb(199, 199, 199);z-index:100;}
       @keyframes appear{
         from {right:-800px;}
         to {right:0px;}
@@ -69,6 +68,7 @@
       </div>
       <a id="headline">
         <span id="roomid" class="" style="margin:0px 10px" onclick="does('leave')">离开</span>
+        <span id="switch" style="margin:0px 10px;float:right;" onclick="switchIt()">折叠</span>
       </a>
       <ul id="messages"><span class="blank"></span></ul>
       <form id="form" action="">
@@ -95,19 +95,13 @@
       document.getElementById('username').innerText = getCookie('username');
       if(getCookie('username') == undefined)
       {
-        window.location.href='../';
+        window.location.href='https://bt233.fun';
       }
       else
       {
-        var sUserAgent = navigator.userAgent;
-        if (sUserAgent.indexOf('Android') > -1 || sUserAgent.indexOf('iPhone') > -1 || sUserAgent.indexOf('iPad') > -1 || sUserAgent.indexOf('iPod') > -1 || sUserAgent.indexOf('Symbian') > -1) {
-            location.href = '../21pm';
-        }
-        else {
-          var socket = io();
-          joinTo('list','normal');
-          socket.emit('room','getlist');
-        }
+        var socket = io();
+        joinTo('list','normal')
+        socket.emit('room','getlist');
       }
       //功能杂项
       create.onclick=function() {
@@ -121,6 +115,22 @@
           input.value = '';
         }
       });
+      /*window.addEventListener('load', function() {//治疗使用折叠展开的后遗症
+        window.addEventListener('resize', function() {
+          width2=window.innerWidth;
+          if (width1!=width2) {//通过“原宽度”和“现宽度”比较实现监听宽度变化
+            if (desk.offsetLeft==0) {
+              desk.style.height='50%';
+              headline.style.top='50%';
+            }
+            else {
+              desk.style.height='100%';
+              headline.style.top='0%';
+            }
+            width1=width2;
+          }
+        })
+      })*/
       //信息接收部分
       socket.on('reload', function(type) {
         switch (type) {
@@ -165,6 +175,23 @@
         }
       });
       //函数部分
+      function switchIt() {//展开和折叠的动画，初次折叠会失败的bug待修
+        var it=document.getElementById('switch');
+        if (desk.style.animation.match('out')) {
+          desk.style.animation='switch_in 0.7s 1';
+          desk.style.height='0%';
+          headline.style.animation='headline_in 0.7s 1';
+          headline.style.top='0%';
+          it.innerText='展开';
+        }
+        else {
+          desk.style.animation='switch_out 0.7s 1';
+          desk.style.height='50%';
+          headline.style.animation='headline_out 0.7s 1';
+          headline.style.top='50%';
+          it.innerText='折叠';
+        }
+      }
       function getCookie(cookieName) {
         const strCookie = document.cookie;
         const cookieList = strCookie.split(';');
@@ -199,7 +226,6 @@
         ops.innerHTML+='<a id="op1" class="option" onclick="sitDown()">加入牌局</a>';
       }
       function sitDown() {
-        location.href='../';
         document.getElementById('name2').innerText=getCookie('username');
         socket.emit('card','join',getCookie('username'));
       }
