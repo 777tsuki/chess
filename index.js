@@ -93,7 +93,7 @@ io.on('connection', (socket) => {
       case 'close':
         redis.del(id);
         redis.hDel('hoster',socket.data.username);
-        io.in(id).emit('room','close');
+        io.to(id).emit('room','close');
     }
   });
   socket.on('message', (msg) => {
@@ -131,7 +131,7 @@ function room_getlist(userid) {
       await hg(i,'host').then((host)=>{
         if (host!=undefined) {
           hg(i,'amount').then((value)=>{
-            io.in(userid).emit('room','list',i,host,value);
+            io.in(userid).emit('room','list',i-1,host,value);
           });
         }
       });
