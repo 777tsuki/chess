@@ -11,10 +11,6 @@ redis.connect()
   console.log(err)
 })*/
 
-/*rs('key','value');
-rg('key').then((res)=>{console.log(res)});
-rd('key');*/
-
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/main.html');
 });
@@ -26,6 +22,7 @@ beginning();
 
 io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（笑）
   socket.on('join', (roomid,username,type) => {
+    roomid+='';
     hg(roomid,'host').then((host)=>{
       if (host==undefined) {//列表中某个房间突然被解散的情况
         io.in(socket.id).emit('reload','unexist_room');
@@ -69,19 +66,6 @@ io.on('connection', (socket) => {
     switch (action)
     {
       case 'create':
-        /*for (var i=1;i<10;i++) {
-          hg(i+'','host').then((host)=>{
-            console.log(i);
-            i=Number(i);
-            if (host==undefined) {
-              roomId=i;
-              return;
-            }
-          });
-        };*/
-        //roomId=getid(1)+'';
-        //console.log('this is '+getid(1));
-        //roomId+='';
         getid(1,socket.data.username).then(function() {
           hg('hoster',socket.data.username).then((roomId)=>{
             roomId+='';
@@ -98,18 +82,18 @@ io.on('connection', (socket) => {
             socket.join(roomId);
             io.in('list').emit('room','list',roomId,socket.data.username,1);
             io.in(socket.id).emit('room','join',roomId,'true');
+            io.in(socket.id).emit('message','牌桌已创建');
             roomId=Number(roomId);
           })
         });
         break;
       case 'getlist':
-        //room_getlist();
+        room_getlist(socket.id);
         break;
       case 'close':
         redis.del(id);
         redis.hDel('hoster',socket.data.username);
-        id=Number(id);
-        io.to(id).emit('room','close');
+        io.in(id).emit('room','close');
     }
   });
   socket.on('message', (msg) => {
@@ -140,13 +124,14 @@ function beginning() {
   redis.hSet('main','host','host');
   redis.setNX('rooms','0');
 }
-async function room_getlist() {
-  await rg('rooms').then((value)=>{
-    for (let i=1;i<value+1;i++){
-      hg(i,'host').then((host)=>{
+function room_getlist(userid) {
+  rg('rooms').then(async (value)=>{
+    for (var i=1;i<=value;i++){
+      i+='';
+      await hg(i,'host').then((host)=>{
         if (host!=undefined) {
           hg(i,'amount').then((value)=>{
-            io.in(socket.id).emit('room','list',i,host,value);
+            io.in(userid).emit('room','list',i,host,value);
           });
         }
       });
@@ -161,39 +146,14 @@ async function getid(id,username) {
         id=Number(id);
         if (host==undefined) {
           result.push(id);
-          //console.log(result[0]);
         }
       });
       id++;
     }
-    //console.log(result[0]);
   })
-  //console.log(result[0]);
-  //return await result[0];
   await redis.hSet('hoster',username,result[0]);
 }
-async function getd(id) {
-  var result=[];
-  rg('rooms').then(async (value)=>{
-    while (id<=10) {
-      hg(id+'','host').then((host)=>{
-        id=Number(id);
-        if (host==undefined) {
-          result.push(id);
-          console.log(id);
-        }
-      }).then(id++);
-    }
-    return result[0];
-  }).then((val)=>{
-    console.log(val);
-    return val;
-  })
-  //console.log(result[0]);
-}
-async function create() {
-  
-}
+
 async function rs(key,value) {
   await redis.set(key,value);
 }
@@ -220,16 +180,6 @@ function amount(room,action) {
     }
   });
 }
-/*function rg(key) {
-  new Promise(
-    async function (resolve, reject) {
-      let value = await redis.get(key);
-      resolve(value);
-    }
-  ).then((value)=>{
-    console.log(value);
-  })
-}*/
 /*async function asyncCall() {
   await redis.set('key','value')
   let value = await redis.get('key')
