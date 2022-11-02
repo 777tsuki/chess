@@ -21,6 +21,7 @@ app.get('/21pm', (req, res) => {
   res.sendFile(__dirname + '/21pm.html');
 });
 
+source();
 beginning();
 
 io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（笑）
@@ -65,7 +66,7 @@ io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（
   });
 });
 io.on('connection', (socket) => {
-  socket.on('room', (action,id) => {
+  socket.on('room', (action,id,ico,name) => {
     switch (action)
     {
       case 'create':
@@ -75,6 +76,9 @@ io.on('connection', (socket) => {
             amount('list','reduce');
             redis.hSet(roomId,'host',socket.data.username);
             redis.hSet(roomId,'amount','1');
+            redis.hSet(roomId,'observe',id);
+            redis.hSet(roomId,'ico',ico);
+            redis.hSet(roomId,'name',name);
             rg('rooms').then((value)=>{
               if (roomId>value) {
                 rs('rooms',roomId);
@@ -83,10 +87,9 @@ io.on('connection', (socket) => {
             socket.data.room=roomId;
             socket.leave('list');
             socket.join(roomId);
-            io.in('list').emit('room','list',roomId,socket.data.username,1);
+            //io.in('list').emit('room','list',roomId,socket.data.username,1,observe,ico,name);
             io.in(socket.id).emit('room','join',roomId,'true');
             io.in(socket.id).emit('message','牌桌已创建');
-            roomId=Number(roomId);
           })
         });
         break;
@@ -119,6 +122,13 @@ server.listen(3000, () => {
   console.log('listening on *:3000');
 });
 
+function source() {
+  app.get('/psc', (req, res) => {
+    const num=Math.round(Math.random()*9);
+    res.sendFile(__dirname + '/psc/psc/psc ('+num+').webp');
+  });
+  app.use('/source', express.static('psc'));
+}
 function beginning() {
   io.emit('some event', { someProperty: 'some value', otherProperty: 'other value' });
   redis.hSet('list','amount','0');
@@ -131,11 +141,13 @@ function room_getlist(userid) {
   rg('rooms').then(async (value)=>{
     for (var i=1;i<=value;i++){
       i+='';
-      await hg(i,'host').then((host)=>{
+      await hg(i,'host').then(async (host)=>{
         if (host!=undefined) {
-          hg(i,'amount').then((value)=>{
-            io.in(userid).emit('room','list',i-1,host,value);
-          });
+          let amount=await hg(i,'amount');
+          let observe=await hg(i,'observe');
+          let ico=await hg(i,'ico');
+          let name=await hg(i,'name');
+          io.in(userid).emit('room','list',i,host,amount,observe,ico,name);
         }
       });
     }
