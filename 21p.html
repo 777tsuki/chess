@@ -1,63 +1,12 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <link rel="preload" href="/source/seto.ttf" as="font" type="font/woff2" crossorigin>
+    <!--<link rel="preload" href="/source/seto.ttf" as="font" type="font/woff2" crossorigin>-->
     <meta name="viewport" content="initial-scale=1,user-scalable=no">
     <link rel="shortcut icon" href="/source/svg/logo.svg">
     <title>BT的聊天室</title>
-    <link rel="stylesheet" type="text/css" href="source/style.css">
-    <style>
-      html {cursor:url('/source/cursor.ico'),auto;}
-      body { background-image:url('/psc');margin: 0; padding-bottom: 3rem; font-family:seto;font-size:20px;background-attachment: fixed;background-position:top;background-repeat: no-repeat;object-fit:cover;background-size:cover;cursor:url('/source/cursor.ico'),auto;}
-      .whole {border: 0;padding: 0;margin: 0;width:100%;height:100%;}
-
-      #form { background: rgba(0, 0, 0, 0.15); padding: 0.25rem; position: fixed; bottom: 0; left: 0; right: 0; display: flex; height: 3rem; box-sizing: border-box; backdrop-filter: blur(10px); }
-      #input { border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem; }
-      #input:focus { outline: none; }
-      #inputname {color:#ad4234;width:250px;background:transparent;border:0;border-bottom:2.5px solid #ad4234;flex-grow: 1;margin:8px 0px 0px 0px;font-size:28px;padding:4px 15px;font-family:seto;z-index:100;text-align:center}
-      #inputname:focus { outline: none; }
-
-
-      #messages { list-style-type: none; margin: 0; padding: 0; }
-      #messages > li { padding: 0.5rem 1rem; }
-      #messages > li:nth-child(odd) { background: #efefef; }
-
-      .input {border: none; padding: 0 1rem; flex-grow: 1; border-radius: 2rem; margin: 0.25rem;}
-      .modal {display: none;text-align:center;position: fixed;z-index: -50;left: 0;top: 0;width: 100%; height: 100%;overflow: auto; background-color: rgb(0,0,0); background-color:#fcf3ec82;;z-index:100 }
-      .card {bottom:0;height:100%;width:100%;right:0;}
-      .main {background-color:white;display:none;width:50%;}
-      .desk {animation:out 0.7s 1;display:none;position:fixed;right:0px;top:0px;background-color:rgb(214, 214, 214);width:50%;height:100%;z-index:-100}
-      .option {margin:20px;background-color:#efefef;border-radius:8px;padding:10px;font-size:28px;animation:appear 0.7s 1;position:relative;z-index:-99;}
-      #headline {position:fixed;top:0px;font-size:20px;display:block;width:50%;padding:7px 0px;background-color:rgb(199, 199, 199);}
-      .list {height:115px;box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 3px 10px 0 rgba(0,0,0,0.19);width:44%;margin:12px 2%;background-color:rgba(255, 163, 163, 0.523);border-radius:16px;padding:10px;backdrop-filter: blur(8px);-webkit-transition: 0.4s;transition: 0.4s;}
-      .list:hover {box-shadow:none;}
-      #roomlist {display:flex;padding:20px 4%;flex-wrap:wrap}
-      @keyframes appear{
-        from {right:-800px;}
-        to {right:0px;}
-      }
-      @keyframes switch_in{
-        from {height:50%;}
-        to {height:0%;}
-      }
-      @keyframes switch_out{
-        from {height:0%;}
-        to {height:50%;}
-      }
-      @keyframes headline_in{
-        from {top:50%;}
-        to {top:0%;}
-      }
-      @keyframes headline_out{
-        from {top:0%;}
-        to {top:50%;}
-      }
-      @font-face
-      {
-        font-family:seto;
-        src: url('/source/seto.ttf');
-      }
-    </style>
+    <link rel="stylesheet" type="text/css" href="source/21p.css">
+    <link rel="stylesheet" type="text/css" href="source/21p.ex.css">
   </head>
   <body>
     <div class="whole">
@@ -85,26 +34,26 @@
         </div>
       </div>
       <!--<video id="bgm" controls="true" autoplay="true" name="media" loop="true" hidden="true"> <source src="/source/bgm.mp3" type="audio/mpeg"></video>-->
-      <div class="card">
-        <a style="position:sticky;top:0px;font-size:26px;display:block;width:100%;padding:7px 0px;background-image:linear-gradient(45deg,rgb(255, 180, 180) 25%,rgb(255, 136, 136) 25% 50%,rgb(255, 180, 180) 50% 75%,rgb(255, 136, 136) 75% 100%);text-align:center">牌桌列表(<span id="number"></span>)</a>
-        <a href="/" style="color:black;text-decoration:none;position:fixed;top:0px;right:0px;font-size:23px;display:block;width:70px;padding:7px 10px;background-color:rgb(255, 136, 136)">聊天室</a>
+      <div class="card" id="card">
+        <a id="title">牌桌列表(<span id="number"></span>)</a>
+        <a href="/" style="color:black;text-decoration:none;position:fixed;top:0px;right:0px;font-size:23px;display:block;width:70px;padding:7px 10px;background-color:transparent">聊天室</a>
         <div id="roomlist">
           <div class="list">
-            <img src="source/list/0.webp" height="111px">
-            <span style="font-size:32px;position:relative;top:-70px">bt233的牌桌(<span id='0'>2</span>)</span><br>
-            <span style="font-size:20px;position:relative;left:117px;top:-60px;color:rgb(255, 255, 255)">牌主:bt233</span><br>
-            <span style="position:relative;left:117px;top:-50px;color:rgb(50, 188, 75)"><img src="source/svg/waiting.svg" width="20px"><span style="position:relative;top:-1.5px">等待中</span></span>
-            <span style="position:relative;left:117px;top:-50px;"><img src="source/svg/off.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span>
+            <img src="source/list/0.webp" height="111px" style="margin:10px 0 10px 10px">
+            <a class="headtext" v-bind:style="fontsize">bt233的牌桌(<span id='0'>2</span>)</a><br>
+            <span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:bt233</span><br>
+            <span style="position:relative;left:127px;top:-60px;color:rgb(50, 188, 75)"><img src="source/svg/waiting.svg" width="20px"><span style="position:relative;top:-1.5px">等待中</span></span>
+            <span style="position:relative;left:127px;top:-60px;"><img src="source/svg/off.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span>
           </div>
           <div class="list">
-            <img src="source/list/9.webp" height="111px">
-            <span style="font-size:32px;position:relative;top:-70px">苏维埃社会主义同盟(<span id='0'>457</span>)</span><br>
-            <span style="font-size:20px;position:relative;left:117px;top:-60px;color:rgb(255, 255, 255)">牌主:列大林</span><br>
-            <span style="position:relative;left:117px;top:-50px;color:rgb(90, 95, 255)"><img src="source/svg/playing.svg" width="20px"><span style="position:relative;top:-1.5px">游戏中</span></span>
-            <span style="position:relative;left:117px;top:-50px;"><img src="source/svg/on.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span>
+            <img src="source/list/9.webp" height="111px" style="margin:10px 0 10px 10px">
+            <a class="headtext" v-bind:style="fontsize">苏维埃社会主义同盟(<span id='0'>457</span>)</a><br>
+            <span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:列大林</span><br>
+            <span style="position:relative;left:127px;top:-60px;color:rgb(90, 95, 255)"><img src="source/svg/playing.svg" width="20px"><span style="position:relative;top:-1.5px">游戏中</span></span>
+            <span style="position:relative;left:127px;top:-60px;"><img src="source/svg/on.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span>
           </div>
         </div>
-        <a id="create" style="position:absolute;bottom:0px;font-size:25px;display:block;width:100%;padding:7px 0px;background-image:linear-gradient(45deg,rgb(255, 180, 180) 25%,rgb(255, 136, 136) 25% 50%,rgb(255, 180, 180) 50% 75%,rgb(255, 136, 136) 75% 100%);text-align:center">新建牌桌</a>
+        <a id="create">新建牌桌</a>
       </div>
       <div class="main">
         <div class="desk">
@@ -125,6 +74,8 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/source/bar.js"></script>
+    <script src="/source/vue.js"></script>
+    <script src="/source/jq.js"></script>
     <script>
       var width1=0,width2=0;
       var messages = document.getElementById('messages');
@@ -134,7 +85,7 @@
       var main = document.querySelector('.main');
       var card = document.querySelector('.card');
       var desk = document.querySelector('.desk');
-      var roomlist = document.getElementById('roomlist');
+      var lists = document.getElementById('roomlist');
       var create = document.getElementById('create');
       var headline=document.getElementById('headline');
       var ops=document.getElementById('options');
@@ -143,6 +94,19 @@
       var modal = document.getElementById('Modal');
       var inputname = document.getElementById('inputname');
       var check = document.getElementById('check');
+      //vue响应式房间名，由于二次渲染问题已弃用
+      /*var vm = new Vue({
+        el:'#roomlist',
+        data:{
+          fontsize:''
+        }
+      })
+      window.addEventListener('load', function() {
+        vm.fontsize='font-size:'+innerWidth/49+'px';
+      })
+      window.addEventListener('resize', function() {
+        vm.fontsize='font-size:'+innerWidth/49+'px';
+      })*/
       //初始加载项
       document.getElementById('username').innerText = getCookie('username');
       //document.getElementById("bgm").volume = 0.3;
@@ -163,6 +127,14 @@
         }
       }
       //功能杂项
+      $(document).ready(function(){
+        window.addEventListener('load', function() {
+          $('.headtext').css('font-size',innerWidth/49+'px');
+        })
+        window.addEventListener('resize', function() {
+          $('.headtext').css('font-size',innerWidth/49+'px');
+        })
+      });
       form.addEventListener('submit', function(e) {
         e.preventDefault();
         if (input.value) {
@@ -224,7 +196,7 @@
           case 'list':
             func="joinTo("+id+",'21p')";
             observe=(observe==1)?'on':'off';
-            roomlist.innerHTML+='<div class="list" onclick='+func+'><img src="source/list/'+ico+'.webp" height="111px"><span style="font-size:32px;position:relative;top:-70px">'+name+'(<span id='+id+'>'+amount+'</span>)</span><br><span style="font-size:20px;position:relative;left:117px;top:-60px;color:rgb(255, 255, 255)">牌主:'+host+'</span><br><span style="position:relative;left:117px;top:-50px;color:rgb(50, 188, 75)"><img src="source/svg/waiting.svg" width="20px"><span style="position:relative;top:-1.5px">等待中</span></span><span style="position:relative;left:117px;top:-50px;"><img src="source/svg/'+observe+'.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span></div>';
+            document.getElementById('roomlist').innerHTML+='<div class="list" onclick='+func+'><img src="source/list/'+ico+'.webp" height="111px" style="margin:10px 0 10px 10px"><a class="headtext" style="font-size:'+innerWidth/49+'px;left:5px">'+name+'(<span id='+id+'>'+amount+'</span>)</a><br><span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:'+host+'</span><br><span style="position:relative;left:127px;top:-60px;color:rgb(50, 188, 75)"><img src="source/svg/waiting.svg" width="20px"><span style="position:relative;top:-1.5px">等待中</span></span><span style="position:relative;left:133px;top:-60px;"><img src="source/svg/'+observe+'.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span></div>';
             break;
           case 'close':
             alert('牌桌已解散');
@@ -255,6 +227,16 @@
             return arr[1];
           }
         }
+      }
+      function getElementsByClassName( name ) {  
+        var arr = [];      
+        var arr2 = document.getElementsByTagName('*');
+        for ( var i = 0; i < arr2.length; i++ ) {
+          if ( arr2[i].className == name  ) {
+            arr[arr.length ] = arr2[i];
+          }
+        }
+        return arr;
       }
       function does(action) {
         switch (action) {

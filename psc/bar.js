@@ -1,10 +1,8 @@
-// 获取元素
 var scrollBar = document.getElementById("scrollBar");
 var bar = scrollBar.children[0];
 var mask = scrollBar.children[1];
 var demo = document.getElementById("demo");
-var imgop = document.getElementById("imgop")
-// 拖动原理
+var imgop = document.getElementById("imgop");
 bar.onmousedown = function(event){
     var event = event || window.event;
     var leftVal = event.clientX - this.offsetLeft;
