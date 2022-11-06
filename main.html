@@ -7,10 +7,12 @@
     <link rel="shortcut icon" href="/source/svg/logo.svg">
     <link rel="stylesheet" type="text/css" href="source/css/main.css">
     <link rel="stylesheet" type="text/css" href="source/css/main.ex.css">
+    <link rel="stylesheet" type="text/css" href="source/css/loading.css">
     <title>BT的聊天室</title>
   </head>
   <body>
     <div class="whole">
+      <div id="loadingDiv" style="position:absolute;left:0;width:100%;top:0;background:#eaecfa;opacity:1;filter:alpha(opacity=80);z-index:10000;"><div id="loader" class="loader">少女折寿中...</div></div>
       <!--<video id="bgm" controls="true" autoplay="true" name="media" loop="true" hidden="true"> <source src="/source/bgm.mp3" type="audio/mpeg"></video>-->
       <a class="title">&ensp;聊天大厅(<span id="number"></span>)</a>
       <a href="/21p" class="chess">棋牌室</a>
@@ -27,7 +29,8 @@
             <span>{{ message }}</span><br>
             <input v-model="message" id="inputname" autocomplete="off" placeholder="你叫什么名字呢?"/>
           </p>
-          <span class="outline"><span class="next" style="position:relative;font-size:24px;">确定</span></span>
+          <div class="multi-spinner-container"><div class="multi-spinner"><div class="multi-spinner"><div class="multi-spinner"><div class="multi-spinner"><div class="multi-spinner"></div></div></div></div></div></div>
+          <div class="outline"><span class="next" style="position:relative;font-size:24px;">确定</span></div>
         </div>
       </div>
     </div>
@@ -53,6 +56,7 @@
       {
         var socket = io();
         socket.emit('join','main',getCookie('username'),'normal');
+        socket.emit('load','loading');
       }
 
       new Vue({
@@ -101,7 +105,22 @@
           input.value = '';
         }
       });
+      window.addEventListener('load', function() {
+        document.getElementById('loadingDiv').style.height=document.documentElement.clientHeight+'px';
+        document.getElementById('loader').style.top=document.documentElement.clientHeight/2+'px';
+      })
+      window.addEventListener('resize', function() {
+        document.getElementById('loadingDiv').style.height=document.documentElement.clientHeight+'px';
+        document.getElementById('loader').style.top=document.documentElement.clientHeight/2+'px';
+      })
 
+      socket.on('load', function(type) {
+        switch (type) {
+          case 'finish':
+            document.getElementById('loadingDiv').style.display='none';
+            break;
+        }
+      });
       socket.on('message', function(msg) {
         var item = document.createElement('li');
         item.textContent = msg;

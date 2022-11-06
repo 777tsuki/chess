@@ -29,7 +29,7 @@ io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（
     roomid+='';
     hg(roomid,'host').then(async (host)=>{
       if (host==undefined) {//列表中某个房间突然被解散的情况
-        io.in(socket.id).emit('reload','unexist_room');
+        io.in(socket.id).emit('load','unexist_room');
       }
       else {
         socket.data.username=username;
@@ -119,6 +119,11 @@ io.on('connection', (socket) => {
   })
   socket.on('message', (msg) => {
     io.in(socket.data.room).emit('message',socket.data.username+" : "+msg);
+  });
+  socket.on('load', (msg) => {
+    if (msg=='loading') {
+      io.in(socket.id).emit('load','finish');
+    }
   });
 });
 io.use((socket, next) => {

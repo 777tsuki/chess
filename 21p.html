@@ -17,6 +17,7 @@
   </head>
   <body>
     <div class="whole">
+      <div id="loadingDiv" style="position:absolute;left:0;width:100%;top:0;background:#eaecfa;opacity:1;filter:alpha(opacity=80);z-index:10000;"><div id="loader" class="loader">少女折寿中...</div></div>
       <div id="Modal" class="modal">
         <div class="table">
           <input id="inputname" value="" placeholder="自定义牌桌名称" autocomplete="off" /><br><br>
@@ -98,7 +99,6 @@
     <script src="/source/js/bar.js"></script>
     <script src="/source/js/vue.js"></script>
     <script src="/source/js/jq.js"></script>
-    <script src="/source/js/loading.js"></script>
     <script>
       var width1=0,width2=0;
       var messages = document.getElementById('messages');
@@ -147,6 +147,7 @@
           var socket = io();
           joinTo('list','normal');
           socket.emit('room','getlist');
+          socket.emit('load','loading');
         }
       }
       //功能杂项
@@ -197,14 +198,25 @@
           opAdd('加入牌局',"sitDown()",'add');
         }
       }
+      window.addEventListener('load', function() {
+        document.getElementById('loadingDiv').style.height=document.documentElement.clientHeight+'px';
+        document.getElementById('loader').style.top=document.documentElement.clientHeight/2+'px';
+      })
+      window.addEventListener('resize', function() {
+        document.getElementById('loadingDiv').style.height=document.documentElement.clientHeight+'px';
+        document.getElementById('loader').style.top=document.documentElement.clientHeight/2+'px';
+      })
       //信息接收部分
-      socket.on('reload', function(type) {
+      socket.on('load', function(type) {
         switch (type) {
           case 'unexist_room':
             alert('牌桌已被解散');
+            location.reload();
+            break;
+          case 'finish':
+            document.getElementById('loadingDiv').style.display='none';
             break;
         }
-        location.reload();
       });
       socket.on('message', function(msg) {
         var item = document.createElement('li');
