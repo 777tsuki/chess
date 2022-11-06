@@ -16,7 +16,7 @@
     </style>
   </head>
   <body>
-    <div id="loadingDiv" style="position:absolute;left:0;width:100%;top:0;background:#eaecfa;z-index:10000;"><div id="loader" class="loader">少女折寿中...</div></div>
+    <div id="loadingDiv" style="height:1024px;position:absolute;left:0;width:100%;top:0;background:#eaecfa;z-index:10000;"><div id="loader" class="loader">少女折寿中...</div></div>
     <div class="whole">
       <div id="Modal" class="modal">
         <div class="table">
@@ -147,7 +147,7 @@
           var socket = io();
           joinTo('list','normal');
           socket.emit('room','getlist');
-          //socket.emit('load','loading');
+          socket.emit('load','loading');
         }
       }
       //功能杂项
@@ -198,14 +198,14 @@
           opAdd('加入牌局',"sitDown()",'add');
         }
       }
-      window.addEventListener('load', function() {
+      /*window.addEventListener('load', function() {
         document.getElementById('loadingDiv').style.height=document.documentElement.clientHeight+'px';
         document.getElementById('loader').style.top=document.documentElement.clientHeight/2+'px';
       })
       window.addEventListener('resize', function() {
         document.getElementById('loadingDiv').style.height=document.documentElement.clientHeight+'px';
         document.getElementById('loader').style.top=document.documentElement.clientHeight/2+'px';
-      })
+      })*/
       //信息接收部分
       socket.on('load', function(type) {
         switch (type) {
