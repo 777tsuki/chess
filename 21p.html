@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!--<link rel="preload" href="/source/seto.woff2" as="font" type="font/woff2" crossorigin>-->
+    <link rel="stylesheet" type="text/css" href="source/css/loading.css">
+    <link rel="preload" href="/source/seto.woff2" as="font" type="font/woff2" crossorigin>
     <meta name="viewport" content="initial-scale=1,user-scalable=no">
     <link rel="shortcut icon" href="/source/svg/logo.svg">
     <title>BT的聊天室</title>
     <link rel="stylesheet" type="text/css" href="source/css/21p.css">
     <link rel="stylesheet" type="text/css" href="source/css/21p.ex.css">
-    <link rel="stylesheet" type="text/css" href="source/css/loading.css">
     <style>
       @keyframes appear{
         from {right:-800px;}
@@ -16,8 +16,8 @@
     </style>
   </head>
   <body>
+    <div id="loadingDiv" style="position:absolute;left:0;width:100%;top:0;background:#eaecfa;z-index:10000;"><div id="loader" class="loader">少女折寿中...</div></div>
     <div class="whole">
-      <div id="loadingDiv" style="position:absolute;left:0;width:100%;top:0;background:#eaecfa;opacity:1;filter:alpha(opacity=80);z-index:10000;"><div id="loader" class="loader">少女折寿中...</div></div>
       <div id="Modal" class="modal">
         <div class="table">
           <input id="inputname" value="" placeholder="自定义牌桌名称" autocomplete="off" /><br><br>
@@ -147,7 +147,7 @@
           var socket = io();
           joinTo('list','normal');
           socket.emit('room','getlist');
-          socket.emit('load','loading');
+          //socket.emit('load','loading');
         }
       }
       //功能杂项
