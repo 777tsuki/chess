@@ -11,7 +11,7 @@
     <title>BT的聊天室</title>
   </head>
   <body>
-    <div id="loadingDiv" style="height:1024px;position:absolute;left:0;width:100%;top:0;background:#eaecfa;z-index:10000;"><div id="loader" class="loader">少女折寿中...</div></div>
+    <div id="loadingDiv" style="height:1024px;position:absolute;left:0;width:100%;top:0;background:#eaecfa;z-index:10000;"><div id="loader" class="loader">少女祈祷中...</div></div>
     <div class="whole">
       <!--<video id="bgm" controls="true" autoplay="true" name="media" loop="true" hidden="true"> <source src="/source/bgm.mp3" type="audio/mpeg"></video>-->
       <a class="title">&ensp;聊天大厅(<span id="number"></span>)</a>
@@ -105,14 +105,6 @@
           input.value = '';
         }
       });
-      window.addEventListener('load', function() {
-        document.getElementById('loadingDiv').style.height=document.documentElement.clientHeight+'px';
-        document.getElementById('loader').style.top=document.documentElement.clientHeight/2+'px';
-      })
-      window.addEventListener('resize', function() {
-        document.getElementById('loadingDiv').style.height=document.documentElement.clientHeight+'px';
-        document.getElementById('loader').style.top=document.documentElement.clientHeight/2+'px';
-      })
 
       socket.on('load', function(type) {
         switch (type) {
