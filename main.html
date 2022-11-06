@@ -1,18 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <!--<link rel="preload" href="/source/seto.ttf" as="font" type="font/woff2" crossorigin>-->
+    <!--<link rel="preload" href="/source/seto.woff2" as="font" type="font/woff2" crossorigin>-->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     <link rel="shortcut icon" href="/source/svg/logo.svg">
-    <link rel="stylesheet" type="text/css" href="source/main.css">
-    <link rel="stylesheet" type="text/css" href="source/main.ex.css">
+    <link rel="stylesheet" type="text/css" href="source/css/main.css">
+    <link rel="stylesheet" type="text/css" href="source/css/main.ex.css">
     <title>BT的聊天室</title>
   </head>
   <body>
     <div class="whole">
       <!--<video id="bgm" controls="true" autoplay="true" name="media" loop="true" hidden="true"> <source src="/source/bgm.mp3" type="audio/mpeg"></video>-->
-      <a class="title">&ensp;在线人数:<span id="number"></span></a>
+      <a class="title">&ensp;聊天大厅(<span id="number"></span>)</a>
       <a href="/21p" class="chess">棋牌室</a>
       <ul id="messages"></ul>
       <form id="form" action="">
@@ -32,7 +32,7 @@
       </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/source/vue.js"></script>
+    <script src="/source/js/vue.js"></script>
     <script>
       var messages = document.getElementById('messages');
       var form = document.getElementById('form');
@@ -76,10 +76,11 @@
         inputname.value="";
       }
       span.onclick = function() {
+        var inputname = document.getElementById('inputname');
         var judgeFn = new RegExp(/\s+/g);
         if (inputname.value.length>12 || inputname.value.length<2)
         {
-          alert('太长或太短');
+          alert(inputname.value);
           inputname.value="";
         }
         else if (judgeFn.test(inputname.value))

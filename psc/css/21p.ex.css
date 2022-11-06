@@ -243,3 +243,50 @@ input:checked + .slider:before {
 .bar:hover .tooltiptext {
     visibility: visible;
 }
+
+.msgbox {
+	backdrop-filter: blur(6px);
+	overflow:hidden;
+	height:414px;
+}
+.msgbox:hover {
+	overflow:auto;
+}
+.msgbox::-webkit-scrollbar {
+    width: 8px;
+}
+.msgbox::-webkit-scrollbar-track {
+    background-color:transparent;
+    border-radius: 100px;
+}
+.msgbox::-webkit-scrollbar-thumb {
+    background-color: rgb(207, 110, 110);
+    border-radius: 100px;
+}
+
+.card-filp {
+	top:22px;
+	margin-left:11.5px;
+	height: 160px;
+	width: 110px;
+	position: relative;
+	transform-style: preserve-3d;
+	transition: 1s;
+	z-index:100;
+}
+
+.front,
+.back {
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	backface-visibility:hidden
+}
+.back {
+	transform: rotateY(180deg);
+}
+.card-filp:hover {
+	transform: rotateY(180deg);
+}
