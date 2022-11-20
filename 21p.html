@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
   <head>
+    <meta charset="utf-8">
     <link rel="stylesheet" type="text/css" href="source/css/loading.css">
-    <link rel="preload" href="/source/seto.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="/source/seto.woff2" as="font" type="font/woff2" crossorigin="">
     <meta name="viewport" content="initial-scale=1,user-scalable=no">
     <link rel="shortcut icon" href="/source/svg/logo.svg">
     <title>BT的聊天室</title>
@@ -204,7 +205,7 @@
         {
           let observe=check.checked?1:0;
           socket.emit('room','create',observe,demo.innerHTML,inputname.value);
-          inRoom();
+          inRoom(inputname.value);
           modal.style.display = "none";
           inputname.value="";
           opAdd('加入牌局',"sitDown()",'add');
@@ -258,39 +259,19 @@
             break;
         }
       });
-      socket.on('card', function(action,player1,player2,option,other,a,b) {
+      socket.on('card', function(action,player1,player2,option,other,a1,b1,a2,b2) {
         switch (action) {
           case 'join':
-            document.getElementById('name1').innerText=player1;
-            if (option==getCookie('username')) {
-              opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
-            }
+            document.getElementById('name2').innerText=player1;
             break;
           case 'start':
             if (player1==getCookie('username')) {
-              sessionStorage.setItem('position','player1');
-              sessionStorage.setItem('card1',a);
-              if (other==1) {
-                opAdd('摸牌',"cardAdd(1,'mine')");
-                opAdd('不要',"cardAdd(1,'mine')");
-              }
-              else {
-                opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
-              }
-              start(a);
+              document.getElementById('name2').innerText=player2;
+              start(a1,a2,b2,(other==1)?'mine':'yours');
             }
             else if (player2==getCookie('username')) {
-              sessionStorage.setItem('position','player2');
-              sessionStorage.setItem('card1',b);
-              document.getElementById('name2').innerText=name;
-              if (other==2) {
-                opAdd('摸牌',"cardAdd(1,'mine')");
-                opAdd('不要',"cardAdd(1,'mine')");
-              }
-              else {
-                opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
-              }
-              start(b);
+              document.getElementById('name1').innerText=player2;
+              start(b1,b2,a2,(other==2)?'mine':'yours');
             }
             else {
               if (option==1) {
@@ -324,8 +305,26 @@
                 break;
             }
             break;
+          case 'accept':
+            if (player1==getCookie('username')) {
+              cardAdd(1,(other=='1')?'mine':'yours',option);
+              if (other=='2') {
+                opAdd('摸牌',"does('accept')");
+                opAdd('不要',"dose('refuse')",'add');
+              }
+            }
+            else if (player2==getCookie('username')) {
+              cardAdd(1,(other=='2')?'mine':'yours',option);
+              if (other=='1') {
+                opAdd('摸牌',"does('accept')");
+                opAdd('不要',"dose('refuse')",'add');
+              }
+            }
+            else {}
+            break;
         }
       });
+
       function getCookie(cookieName) {
         const strCookie = document.cookie;
         const cookieList = strCookie.split(';');
@@ -342,8 +341,16 @@
             location.reload();
             break;
           case 'close':
-            socket.emit('room','close',document.getElementById('roomid').className);
+            socket.emit('room','close',document.getElementById('roomid').className,getCookie('username'));
             location.reload();
+            break;
+          case 'accept':
+            socket.emit('card','accept');
+            opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
+            break;
+          case 'refuse':
+            socket.emit('card','refuse');
+            opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
             break;
         }
       }
@@ -361,7 +368,9 @@
         desk.style.display='block';
       }
       function sitDown() {
+        opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
         socket.emit('card','join',getCookie('username'));
+        document.getElementById('name1').innerText=getCookie('username');
       }
       function opAdd(text,action,tip) {
         if (tip=='add') {
@@ -370,27 +379,41 @@
         else {
           ops.innerHTML='<a class="option" onclick="'+action+'">'+text+'</a>';
         }
+        document.querySelector('.option').addEventListener("animationend",()=>{
+          $('.option').css('animation','');
+        });
       }
-      function cardAdd(type,to) {
+      function cardAdd(type,to,r,tip) {
         $('.cards').css('animation','');
-        let r=Math.round(Math.random()*10+1);
         let text=(type==0)?'':r;
         let style=(type==0)?'height:145px;top:-4px;left:-10px':'height:300px;left:-30px;';
-        let tip=(type==0)?'secret':'';
         let num=(type==0)?'0':r;
         document.getElementById(to).innerHTML+='<div id="'+tip+'" class="cards" style="z-index:100;animation:appear 0.5s 1;position:relative;top:22px;margin-left:11.5px;background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">'+text+'</a><img src="/source/card/'+num+'.webp" style="position:relative;'+style+'"></div>';
-        if (type!=0) opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
-        sessionStorage.setItem('card1',num);
       }
-      function start(num) {
-        document.getElementById('num1').innerText=num;
-        document.getElementById('num2').setAttribute('src','/source/card/'+num+'.webp');
-        cardAdd(0,'mine');
-        var mine=document.getElementById('secret');
-        mine.addEventListener("animationend",()=>{
-          document.getElementById('secret').style.display='none';
+      function start(m1,m2,y2,who) {
+        document.getElementById('num1').innerText=m1;
+        document.getElementById('num2').setAttribute('src','/source/card/'+m1+'.webp');
+        cardAdd(0,'mine',m1,'m1');
+        var dm1=document.getElementById('m1');
+        dm1.addEventListener("animationend",()=>{
+          document.getElementById('m1').style.display='none';
           document.querySelector('.card-filp').style.display='block';
-          cardAdd(1,'mine');
+          cardAdd(0,'yours',0,'y1');
+          var dy1=document.getElementById('y1');
+          dy1.addEventListener("animationend",()=>{
+            cardAdd(1,'mine',m2,'m2');
+            var dm2=document.getElementById('m2');
+            dm2.addEventListener("animationend",()=>{
+              cardAdd(1,'yours',y2,'y2');
+              var dy2=document.getElementById('y2');
+              dy2.addEventListener("animationend",()=>{
+                if (who=='mine') {
+                  opAdd('摸牌',"does('accept')");
+                  opAdd('不要',"dose('refuse')",'add');
+                }
+              });
+            });
+          });
         });
       }
     </script>

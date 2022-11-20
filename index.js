@@ -3,10 +3,15 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const { Server } = require("socket.io");
-const io = new Server(server);
+const io = new Server(server, {
+  cors: {
+    allowedHeaders: ["aheader"],
+    credentials: true
+  }
+});
 const redisClient = require('redis')
 const redis = redisClient.createClient(6379, '127.0.0.1');
-redis.connect()
+redis.connect();
 /*redis.on('error', err => {
   console.log(err)
 })*/
@@ -40,7 +45,7 @@ io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（
           }
           socket.join(roomid);
           socket.data.room=roomid;
-          amount(roomid,'add');
+          amount(roomid);
           if (host==username) {//区分是不是房主
             io.in(socket.id).emit('room','join',roomid,'true');
           }
@@ -59,9 +64,9 @@ io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（
           });
         }
         if (type!='normal') {//进入专房等于离开房间列表，人数减一
-          amount('list','reduce');
+          amount('list');
           let player1=await hg(roomid,'player1');
-          let player2=await hg(roomid,'player1');
+          let player2=await hg(roomid,'player2');
           let stats=await hg(roomid,'stats');
           io.in(socket.id).emit('card','member',player1,player2,stats);
         }
@@ -77,10 +82,9 @@ io.on('connection', (socket) => {
         getid(1,socket.data.username).then(function() {
           hg('hoster',socket.data.username).then((roomId)=>{
             roomId+='';
-            amount('list','reduce');
+            amount('list');
             redis.hSet(roomId,{
               'host':socket.data.username,
-              'amount':'1',
               'observe':id,
               'ico':ico,
               'name':name,
@@ -98,6 +102,7 @@ io.on('connection', (socket) => {
             //io.in('list').emit('room','list',roomId,socket.data.username,1,observe,ico,name);
             io.in(socket.id).emit('room','join',roomId,'true');
             io.in(socket.id).emit('message','牌桌已创建');
+            amount(roomId);
           })
         });
         break;
@@ -106,14 +111,25 @@ io.on('connection', (socket) => {
         break;
       case 'close':
         redis.del(id);
-        redis.hDel('hoster',socket.data.username);
+        redis.hDel('hoster',ico);
         io.to(id).emit('room','close');
     }
   });
-  socket.on('card',(action)=>{
+  socket.on('card',async (action)=>{
     switch (action) {
       case 'join':
-        card_join(socket.data.room,socket.data.username);
+        card_join(socket.data.room,socket.data.username,socket.id);
+        break;
+      case 'accept':
+        let a = await card_add(socket.data.room);
+        let stats = await hg(socket.data.room,'stats');
+        let player1 = await hg(socket.data.room,'player1');
+        let player2 = await hg(socket.data.room,'player2');
+        io.in(socket.data.room).emit('card','accept',player1,player2,a,stats);
+        redis.hSet(socket.data.room,'stats',(stats=='1')?'2':'1');
+        break;
+      case 'refuse':
+
         break;
     }
   })
@@ -132,7 +148,7 @@ io.use((socket, next) => {
   }, 1);
   socket.on('disconnect', () => {
     if (socket.data.room!=undefined) {
-      amount(socket.data.room,'reduce');
+      amount(socket.data.room);
       socket.leave(socket.data.room);
     }
   });
@@ -153,11 +169,9 @@ function beginning() {
   io.emit('some event', { someProperty: 'some value', otherProperty: 'other value' });
   redis.hSet('list',{
     'host':'host',
-    'amount':'0',
   });
   redis.hSet('main',{
     'host':'host',
-    'amount':'0',
   });
   redis.setNX('rooms','0');
 }
@@ -167,11 +181,11 @@ function room_getlist(userid) {
       i+='';
       await hg(i,'host').then(async (host)=>{
         if (host!=undefined) {
-          let amount=await hg(i,'amount');
+          let amount=await io.in(i).fetchSockets();
           let observe=await hg(i,'observe');
           let ico=await hg(i,'ico');
           let name=await hg(i,'name');
-          io.in(userid).emit('room','list',i,host,amount,observe,ico,name);
+          io.in(userid).emit('room','list',i,host,amount.length,observe,ico,name);
         }
       });
     }
@@ -192,14 +206,14 @@ async function getid(id,username) {
   })
   await redis.hSet('hoster',username,result[0]);
 }
-async function card_join(room,name) {
+async function card_join(room,name,id) {
   room+='';
   var player1=await hg(room,'player1');
   var player2=await hg(room,'player2');
   if (player2==undefined) {
     if (player1==undefined) {
       await redis.hSet(room,'player1',name);
-      io.in(room).emit('card','join',name);
+      io.to(room).except(id).emit('card','join',name);
     }
     else {
       let nn=Math.round(Math.random()+1);
@@ -208,17 +222,11 @@ async function card_join(room,name) {
         'player2':name,
         'stats':nn,
       });
-      let value=await hg(room,'nums');
-      result=value.split(',');
-      let i=Math.round(Math.random()*10);
-      let a=result[i];
-      result.splice(i,1);
-      i=Math.round(Math.random()*9);
-      let b=result[i];
-      result.splice(i,1);
-      io.in(room).emit('card','start',player1,name,observe,nn,a,b);
-      result=result.toString();
-      redis.hSet(room,'nums',result);
+      let a1=await card_add(room);
+      let b1=await card_add(room);
+      let a2=await card_add(room);
+      let b2=await card_add(room);
+      io.in(room).emit('card','start',player1,name,observe,nn,a1,b1,a2,b2);
     }
   }
 }
@@ -237,17 +245,19 @@ async function hg(key,field) {
   let value = await redis.hGet(key,field);
   return value;
 }
-function amount(room,action) {
-  hg(room,'amount').then((amount)=>{
-    if (action=='add') {
-      redis.hSet(room,'amount',++amount);
-      io.in(room).emit('number',amount);
-    }
-    else {
-      redis.hSet(room,'amount',--amount);
-      io.in(room).emit('number',amount);
-    }
-  });
+async function amount(room) {
+  let sockets = await io.in(room).fetchSockets();
+  io.in(room).emit('number',sockets.length);
+}
+async function card_add(room) {
+  let value=await hg(room,'nums');
+  let result=value.split(',');
+  let i=Math.round(Math.random()*(result.length-1));
+  let a=result[i];
+  result.splice(i,1);
+  result=result.toString();
+  await redis.hSet(room,'nums',result);
+  return a;
 }
 /*async function asyncCall() {
   await redis.set('key','value')
