@@ -49,6 +49,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="/source/js/vue.js"></script>
     <script>
+      var socket = io();
       var messages = document.getElementById('messages');
       var form = document.getElementById('form');
       var input = document.getElementById('input');
@@ -58,7 +59,6 @@
       var username = document.getElementById('username');
       var x = document.querySelector('.close');
 
-      document.getElementById('username').innerText = getCookie('username');
       //document.getElementById("bgm").volume = 0.3;
       if(getCookie('username') == undefined)
       {
@@ -66,12 +66,11 @@
       }
       else
       {
-        var socket = io();
         socket.emit('join','main',getCookie('username'),'normal');
+        document.getElementById('username').innerText = getCookie('username');
       }
       window.onload=function(){ 
         socket.emit('load','loading');
-        document.getElementById('loadingDiv').style.display='none';
       }
 
       new Vue({
@@ -99,7 +98,7 @@
         var judgeFn = new RegExp(/\s+/g);
         if (inputname.value.length>12 || inputname.value.length<2)
         {
-          alert(inputname.value);
+          alert('太长或太短');
           inputname.value="";
         }
         else if (judgeFn.test(inputname.value))
