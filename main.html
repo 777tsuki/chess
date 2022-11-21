@@ -70,7 +70,8 @@
         socket.emit('join','main',getCookie('username'),'normal');
       }
       window.onload=function(){ 
-        socket.emit('load','loading'); 
+        socket.emit('load','loading');
+        document.getElementById('loadingDiv').style.display='none';
       }
 
       new Vue({
