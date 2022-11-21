@@ -310,17 +310,46 @@
               cardAdd(1,(other=='1')?'mine':'yours',option);
               if (other=='2') {
                 opAdd('摸牌',"does('accept')");
-                opAdd('不要',"dose('refuse')",'add');
+                opAdd('不要',"does('refuse')",'add');
               }
             }
             else if (player2==getCookie('username')) {
               cardAdd(1,(other=='2')?'mine':'yours',option);
               if (other=='1') {
                 opAdd('摸牌',"does('accept')");
-                opAdd('不要',"dose('refuse')",'add');
+                opAdd('不要',"does('refuse')",'add');
               }
             }
             else {}
+            break;
+          case 'refuse':
+            if (player1==getCookie('username') && option=='2') {
+              opAdd('摸牌',"does('accept')");
+              opAdd('不要',"does('refuse')",'add');
+            }
+            else if (player2==getCookie('username') && option=='1') {
+              opAdd('摸牌',"does('accept')");
+              opAdd('不要',"does('refuse')",'add');
+            }
+            else {}
+            break;
+          case 'overflow':
+            if (player1==getCookie('username')) {
+              alert('你没法摸更多的牌了。');
+              opAdd('摸牌',"does('accept')");
+              opAdd('不要',"does('refuse')",'add');
+            }
+            break;
+          case 'result':
+            alert(((option=='1')?player1:player2)+'获胜。');
+            document.querySelector('.card-filp').style.display='none';
+            document.getElementById('name1').innerText='玩家';
+            document.getElementById('name2').innerText='玩家';
+            $(".acard").remove();
+            $(".y1").remove();
+            $(".m2").remove();
+            $(".y2").remove();
+            opAdd('加入牌局',"sitDown()");
             break;
         }
       });
@@ -345,12 +374,12 @@
             location.reload();
             break;
           case 'accept':
-            socket.emit('card','accept');
             opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
+            socket.emit('card','accept');
             break;
           case 'refuse':
-            socket.emit('card','refuse');
             opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
+            socket.emit('card','refuse');
             break;
         }
       }
@@ -388,7 +417,7 @@
         let text=(type==0)?'':r;
         let style=(type==0)?'height:145px;top:-4px;left:-10px':'height:300px;left:-30px;';
         let num=(type==0)?'0':r;
-        document.getElementById(to).innerHTML+='<div id="'+tip+'" class="cards" style="z-index:100;animation:appear 0.5s 1;position:relative;top:22px;margin-left:11.5px;background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">'+text+'</a><img src="/source/card/'+num+'.webp" style="position:relative;'+style+'"></div>';
+        document.getElementById(to).innerHTML+='<div id="'+tip+'" class="cards acard" style="z-index:100;animation:appear 0.5s 1;position:relative;top:22px;margin-left:11.5px;background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">'+text+'</a><img src="/source/card/'+num+'.webp" style="position:relative;'+style+'"></div>';
       }
       function start(m1,m2,y2,who) {
         document.getElementById('num1').innerText=m1;
@@ -396,7 +425,7 @@
         cardAdd(0,'mine',m1,'m1');
         var dm1=document.getElementById('m1');
         dm1.addEventListener("animationend",()=>{
-          document.getElementById('m1').style.display='none';
+          document.getElementById('m1').remove();
           document.querySelector('.card-filp').style.display='block';
           cardAdd(0,'yours',0,'y1');
           var dy1=document.getElementById('y1');
@@ -409,7 +438,7 @@
               dy2.addEventListener("animationend",()=>{
                 if (who=='mine') {
                   opAdd('摸牌',"does('accept')");
-                  opAdd('不要',"dose('refuse')",'add');
+                  opAdd('不要',"does('refuse')",'add');
                 }
               });
             });

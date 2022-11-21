@@ -32,7 +32,7 @@ beginning();
 io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（笑）
   socket.on('join', (roomid,username,type) => {
     roomid+='';
-    hg(roomid,'host').then(async (host)=>{
+    redis.hGet(roomid,'host').then(async (host)=>{
       if (host==undefined) {//列表中某个房间突然被解散的情况
         io.in(socket.id).emit('load','unexist_room');
       }
@@ -57,7 +57,7 @@ io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（
           io.in(roomid).emit('message',username+'进来了');
         }
         else {
-          hg('hoster',username).then((ownroom)=>{
+          redis.hGet('hoster',username).then((ownroom)=>{
             if (ownroom!=undefined) {//已经建过房间的情况
               io.in(socket.id).emit('room','exist',ownroom);
             }
@@ -65,9 +65,9 @@ io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（
         }
         if (type!='normal') {//进入专房等于离开房间列表，人数减一
           amount('list');
-          let player1=await hg(roomid,'player1');
-          let player2=await hg(roomid,'player2');
-          let stats=await hg(roomid,'stats');
+          let player1=await redis.hGet(roomid,'player1');
+          let player2=await redis.hGet(roomid,'player2');
+          let stats=await redis.hGet(roomid,'stats');
           io.in(socket.id).emit('card','member',player1,player2,stats);
         }
       }
@@ -80,7 +80,7 @@ io.on('connection', (socket) => {
     {
       case 'create':
         getid(1,socket.data.username).then(function() {
-          hg('hoster',socket.data.username).then((roomId)=>{
+          redis.hGet('hoster',socket.data.username).then((roomId)=>{
             roomId+='';
             amount('list');
             redis.hSet(roomId,{
@@ -113,6 +113,7 @@ io.on('connection', (socket) => {
         redis.del(id);
         redis.hDel('hoster',ico);
         io.to(id).emit('room','close');
+        break;
     }
   });
   socket.on('card',async (action)=>{
@@ -121,15 +122,10 @@ io.on('connection', (socket) => {
         card_join(socket.data.room,socket.data.username,socket.id);
         break;
       case 'accept':
-        let a = await card_add(socket.data.room);
-        let stats = await hg(socket.data.room,'stats');
-        let player1 = await hg(socket.data.room,'player1');
-        let player2 = await hg(socket.data.room,'player2');
-        io.in(socket.data.room).emit('card','accept',player1,player2,a,stats);
-        redis.hSet(socket.data.room,'stats',(stats=='1')?'2':'1');
+        accept(socket.data.room);
         break;
       case 'refuse':
-
+        refuse(socket.data.room);
         break;
     }
   })
@@ -179,12 +175,12 @@ function room_getlist(userid) {
   rg('rooms').then(async (value)=>{
     for (var i=1;i<=value;i++){
       i+='';
-      await hg(i,'host').then(async (host)=>{
+      await redis.hGet(i,'host').then(async (host)=>{
         if (host!=undefined) {
           let amount=await io.in(i).fetchSockets();
-          let observe=await hg(i,'observe');
-          let ico=await hg(i,'ico');
-          let name=await hg(i,'name');
+          let observe=await redis.hGet(i,'observe');
+          let ico=await redis.hGet(i,'ico');
+          let name=await redis.hGet(i,'name');
           io.in(userid).emit('room','list',i,host,amount.length,observe,ico,name);
         }
       });
@@ -195,7 +191,7 @@ async function getid(id,username) {
   var result=[];
   await rg('rooms').then(async (value)=>{
     while (id<=value+1) {
-      await hg(id+'','host').then((host)=>{
+      await redis.hGet(id+'','host').then((host)=>{
         id=Number(id);
         if (host==undefined) {
           result.push(id);
@@ -208,8 +204,8 @@ async function getid(id,username) {
 }
 async function card_join(room,name,id) {
   room+='';
-  var player1=await hg(room,'player1');
-  var player2=await hg(room,'player2');
+  var player1=await redis.hGet(room,'player1');
+  var player2=await redis.hGet(room,'player2');
   if (player2==undefined) {
     if (player1==undefined) {
       await redis.hSet(room,'player1',name);
@@ -217,16 +213,21 @@ async function card_join(room,name,id) {
     }
     else {
       let nn=Math.round(Math.random()+1);
-      let observe=await hg(room,'observe');
-      await redis.hSet(room,{
-        'player2':name,
-        'stats':nn,
-      });
+      let observe=await redis.hGet(room,'observe');
       let a1=await card_add(room);
       let b1=await card_add(room);
       let a2=await card_add(room);
       let b2=await card_add(room);
       io.in(room).emit('card','start',player1,name,observe,nn,a1,b1,a2,b2);
+      await redis.hSet(room,{
+        'player2':name,
+        'stats':nn,
+        'card1':a1+','+a2,
+        'card2':b1+','+b2,
+        'limit':'21',
+        'refuse1':'0',
+        'refuse2':'0'
+      });
     }
   }
 }
@@ -238,32 +239,80 @@ async function rg(key) {
   let value = await redis.get(key);
   return value;
 }
-async function rd(key) {
-  await redis.del('key');
-}
-async function hg(key,field) {
-  let value = await redis.hGet(key,field);
-  return value;
-}
 async function amount(room) {
   let sockets = await io.in(room).fetchSockets();
   io.in(room).emit('number',sockets.length);
 }
 async function card_add(room) {
-  let value=await hg(room,'nums');
+  let value=await redis.hGet(room,'nums');
   let result=value.split(',');
   let i=Math.round(Math.random()*(result.length-1));
   let a=result[i];
   result.splice(i,1);
   result=result.toString();
   await redis.hSet(room,'nums',result);
-  return a;
+  return a+'';
 }
-/*async function asyncCall() {
-  await redis.set('key','value')
-  let value = await redis.get('key')
-  console.log(value)
-  let num = await redis.del('key')
-  console.log(num)
-  await redis.quit()
-}*/
+async function accept(room) {
+  let stats = await redis.hGet(room,'stats');
+  let player1 = await redis.hGet(room,'player1');
+  let player2 = await redis.hGet(room,'player2');
+  let value = await redis.hGet(room,(stats=='1')?'card1':'card2');
+  let result = value.split(',');
+  let limit = await redis.hGet(room,'limit');
+  if (eval(result.join('+'))>=limit) io.in(room).emit('card','overflow',(stats=='1')?player1:player2);
+  else {
+    let a = await card_add(room);
+    io.in(room).emit('card','accept',player1,player2,a,stats);
+    await redis.hSet(room,'stats',(stats=='1')?'2':'1');
+    await redis.hSet(room,(stats=='1')?'card1':'card2',value+','+a);
+    await redis.hSet(room,(stats=='1')?'refuse1':'refuse2','0');
+  }
+}
+async function refuse(room) {
+  var testfor;
+  let stats = await redis.hGet(room,'stats');
+  let refuse1 = await redis.hGet(room,'refuse1');
+  let refuse2 = await redis.hGet(room,'refuse2');
+  let player1 = await redis.hGet(room,'player1');
+  let player2 = await redis.hGet(room,'player2');
+  if (refuse1==1 && stats==2) testfor='1';
+  if (refuse2==1 && stats==1) testfor='1';
+  if (testfor==1) {
+    var result;
+    let limit = await redis.hGet(room,'limit');
+    let val1 = await redis.hGet(room,'card1');
+    let val2 = await redis.hGet(room,'card2');
+    let result1 = val1.split(',');
+    let result2 = val2.split(',');
+    let card1 = await eval(result1.join('+'));
+    let card2 = await eval(result2.join('+'));
+    if (card1==card2) result='0';
+    else {
+      if (card1>limit) {
+        if (card2>limit) result=(card1>card2)?'2':'1';
+        else result='2';
+      }
+      else {
+        if (card2>limit) result='1';
+        else result=(card1>card2)?'1':'2';
+      }
+    }
+    io.in(room).emit('card','result',player1,player2,result);
+    redis.hSet(room,{
+      'stats':'waitting',
+      'nums':'1,2,3,4,5,6,7,8,9,10,11',
+      'refuse1':'0',
+      'refuse2':'0',
+      'card1':'',
+      'card2':'',
+    });
+    redis.hDel(room,'player1');
+    redis.hDel(room,'player2');
+  }
+  else {
+    io.in(room).emit('card','refuse',player1,player2,stats);
+    await redis.hSet(room,(stats=='1')?'refuse1':'refuse2','1');
+    await redis.hSet(room,'stats',(stats=='1')?'2':'1');
+  }
+}
