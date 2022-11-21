@@ -68,7 +68,9 @@
       {
         var socket = io();
         socket.emit('join','main',getCookie('username'),'normal');
-        socket.emit('load','loading');
+      }
+      window.onload=function(){ 
+        socket.emit('load','loading'); 
       }
 
       new Vue({

@@ -17,6 +17,19 @@
     </style>
   </head>
   <body>
+    <div id="loadingDiv" style="height:1024px;position:absolute;left:0;width:100%;top:0;background:#eaecfa;z-index:10000;">
+      <div class="maintain">
+        <span class="taiji">&ensp;</span>
+        <span class="letter">少</span>
+        <span class="letter">女</span>
+        <span class="letter">祈</span>
+        <span class="letter">祷</span>
+        <span class="letter">中</span>
+        <span class="letter">&ensp;.</span>
+        <span class="letter">&ensp;.</span>
+        <span class="letter">&ensp;.</span>
+      </div>
+    </div>
     <div class="whole">
       <div id="Modal" class="modal">
         <div class="table">
@@ -117,19 +130,6 @@
       var modal = document.getElementById('Modal');
       var inputname = document.getElementById('inputname');
       var check = document.getElementById('check');
-      //vue响应式房间名，由于二次渲染问题已弃用
-      /*var vm = new Vue({
-        el:'#roomlist',
-        data:{
-          fontsize:''
-        }
-      })
-      window.addEventListener('load', function() {
-        vm.fontsize='font-size:'+innerWidth/49+'px';
-      })
-      window.addEventListener('resize', function() {
-        vm.fontsize='font-size:'+innerWidth/49+'px';
-      })*/
       //初始加载项
       document.getElementById('username').innerText = getCookie('username');
       //document.getElementById("bgm").volume = 0.3;
@@ -147,10 +147,12 @@
           var socket = io();
           joinTo('list','normal');
           socket.emit('room','getlist');
-          socket.emit('load','loading');
         }
       }
       //功能杂项
+      window.onload=function(){ 
+        socket.emit('load','loading'); 
+      } 
       $(document).ready(function(){
         window.addEventListener('load', function() {
           $('.headtext').css('font-size',innerWidth/49+'px');
