@@ -287,6 +287,8 @@ async function refuse(room) {
     let result2 = val2.split(',');
     let card1 = await eval(result1.join('+'));
     let card2 = await eval(result2.join('+'));
+    let a1=result1[0];
+    let b1=result2[0];
     if (card1==card2) result='0';
     else {
       if (card1>limit) {
@@ -298,7 +300,7 @@ async function refuse(room) {
         else result=(card1>card2)?'1':'2';
       }
     }
-    io.in(room).emit('card','result',player1,player2,result);
+    io.in(room).emit('card','result',player1,player2,result,'',a1,b1);
     redis.hSet(room,{
       'stats':'waitting',
       'nums':'1,2,3,4,5,6,7,8,9,10,11',

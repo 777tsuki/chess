@@ -30,6 +30,12 @@
         <span class="letter">&ensp;.</span>
       </div>
     </div>
+    <div id="resultbox" style="height:1024px;position:absolute;left:0;width:100%;top:0;background-color:#fcf3ec82;z-index:100;display:none">
+      <div class="maintain" style="width:500px">
+        <img id="resultimg" src="/source/result/winner.webp" style="height:450px;position:relative;top:-150px;">
+      </div>
+      <h1 id="resultword" class="maintain" style="font-size:80px;top:50%;color:#ee6d6d;width:500px">WINNER</h1>
+    </div>
     <div class="whole">
       <div id="Modal" class="modal">
         <div class="table">
@@ -92,17 +98,29 @@
       <div class="desk">
         <p style="display:block;font-size:32px;margin:10px auto;text-align:center;color:#a43425;font-weight:bold;">二十一点</p>
         <div class="area" id="yours">
+          <div class="cards" style="animation:appear 0.5s 1;">
+            <div id="yoursecret" class="card-filp" style="display:none">
+              <div class="font">
+                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225"></a><img src="/source/card/0.webp" style="position:relative;height:145px;top:-4px;left:-10px"></div>
+              </div>
+              <div class="back">
+                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a id="num3" style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">7</a><img id="num4" src="/source/card/7.webp" style="position:relative;height:300px;left:-30px;"></div>
+              </div>
+            </div>
+          </div>
         </div>
         <div id="options" style="margin:20px 15px"></div>
-        <div class="area" id="mine"><div class="cards" style="animation:appear 0.5s 1;">
-          <div id="mysecret" class="card-filp" style="display:none">
-            <div class="font">
-              <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225"></a><img src="/source/card/0.webp" style="position:relative;height:145px;top:-4px;left:-10px"></div>
+        <div class="area" id="mine">
+          <div class="cards" style="animation:appear 0.5s 1;">
+            <div id="mysecret" class="card-filp" style="display:none">
+              <div class="font">
+                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225"></a><img src="/source/card/0.webp" style="position:relative;height:145px;top:-4px;left:-10px"></div>
+              </div>
+              <div class="back">
+                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a id="num1" style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">7</a><img id="num2" src="/source/card/7.webp" style="position:relative;height:300px;left:-30px;"></div>
+              </div>
             </div>
-            <div class="back">
-              <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a id="num1" style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">7</a><img id="num2" src="/source/card/7.webp" style="position:relative;height:300px;left:-30px;"></div>
-            </div>
-          </div></div>
+          </div>
         </div>
         <p id="name1" style="display:block;font-size:72px;position:relative;margin:auto;top:-137px;text-align:center;color:rgb(255, 255, 255);">玩家</p>
         <p id="name2" style="display:block;font-size:72px;position:relative;margin:auto;top:-475px;text-align:center;color:rgb(255, 255, 255);">玩家</p>
@@ -276,10 +294,18 @@
             let value=(player1!=undefined)+(player2!=undefined)*2;
             switch (value+'') {
               case '1':
-                document.getElementById('name2').innerText=player1;
-                opAdd('加入牌局',"sitDown()",'add');
+                if (player1==getCookie('username')) {
+                  $('#name1').text(player1);
+                  opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
+                }
+                else {
+                  document.getElementById('name2').innerText=player1;
+                  opAdd('加入牌局',"sitDown()",'add');
+                }
                 break;
               case '3':
+                alert('暂未实现旁观功能，敬请期待~');
+                location.reload();
                 document.getElementById('name1').innerText=player2;
                 document.getElementById('name2').innerText=player1;
                 let text=(option==1)?player1:player2;
@@ -330,15 +356,47 @@
             }
             break;
           case 'result':
-            alert(((option=='1')?player1:player2)+'获胜。');
-            document.querySelector('.card-filp').style.display='none';
+            opAdd('揭晓结果……',"");
+            if (player1==getCookie('username')) {
+              document.getElementById('num3').innerText=b1;
+              document.getElementById('num4').setAttribute('src','/source/card/'+b1+'.webp');
+              result(option,'1');
+            }
+            else if (player2==getCookie('username')) {
+              document.getElementById('num3').innerText=a1;
+              document.getElementById('num4').setAttribute('src','/source/card/'+a1+'.webp');
+              result(option,'2');
+            }
+            else {}
+            setTimeout(()=>{
+              $("#y1").remove();
+              $("#yoursecret").css('display','block');
+              $("#mysecret").css('transform','rotateY(180deg)');
+              setTimeout(()=>{
+                $("#yoursecret").css('transform','rotateY(180deg)');
+                setTimeout(()=>{
+                  $('#resultbox').click(()=>{$('#resultbox').css('display','none');})
+                  $('#resultbox').css('display','block');
+                  $('.card-filp').css('display','none');
+                  $('#name1').text('玩家');
+                  $('#name2').text('玩家');
+                  $(".acard").remove();
+                  $("#m2").remove();
+                  $("#y2").remove();
+                  opAdd('加入牌局',"sitDown()");
+                  $("#yoursecret").css('transform','');
+                  $("#mysecret").css('transform','');
+                },1500);
+              },1500);
+            }, 1000);
+            //alert(((option=='1')?player1:player2)+'获胜。');
+            /*document.querySelector('.card-filp').style.display='none';
             document.getElementById('name1').innerText='玩家';
             document.getElementById('name2').innerText='玩家';
             $(".acard").remove();
-            $(".y1").remove();
             $(".m2").remove();
             $(".y2").remove();
-            opAdd('加入牌局',"sitDown()");
+            opAdd('加入牌局',"sitDown()");*/
             break;
         }
       });
@@ -397,9 +455,6 @@
         else {
           ops.innerHTML='<a class="option" onclick="'+action+'">'+text+'</a>';
         }
-        document.querySelector('.option').addEventListener("animationend",()=>{
-          $('.option').css('animation','');
-        });
       }
       function cardAdd(type,to,r,tip) {
         $('.cards').css('animation','');
@@ -412,19 +467,15 @@
         document.getElementById('num1').innerText=m1;
         document.getElementById('num2').setAttribute('src','/source/card/'+m1+'.webp');
         cardAdd(0,'mine',m1,'m1');
-        var dm1=document.getElementById('m1');
-        dm1.addEventListener("animationend",()=>{
+        document.getElementById('m1').addEventListener("animationend",()=>{
           document.getElementById('m1').remove();
-          document.querySelector('.card-filp').style.display='block';
+          document.getElementById('mysecret').style.display='block';
           cardAdd(0,'yours',0,'y1');
-          var dy1=document.getElementById('y1');
-          dy1.addEventListener("animationend",()=>{
+          document.getElementById('y1').addEventListener("animationend",()=>{
             cardAdd(1,'mine',m2,'m2');
-            var dm2=document.getElementById('m2');
-            dm2.addEventListener("animationend",()=>{
+            document.getElementById('m2').addEventListener("animationend",()=>{
               cardAdd(1,'yours',y2,'y2');
-              var dy2=document.getElementById('y2');
-              dy2.addEventListener("animationend",()=>{
+              document.getElementById('y2').addEventListener("animationend",()=>{
                 if (who=='mine') {
                   opAdd('摸牌',"does('accept')");
                   opAdd('不要',"does('refuse')",'add');
@@ -433,6 +484,12 @@
             });
           });
         });
+      }
+      function result(option,player) {
+        if (option=='0') $('#resultimg').attr('src','/source/result/draw.webp');
+        else $('#resultimg').attr('src',(option==player)?'/source/result/winner.webp':'/source/result/loser.webp');
+        if (option=='0') $('#resultword').text('DRAW');
+        else $('#resultword').text((option==player)?'WINNER':'LOSER');
       }
     </script>
   </body>
