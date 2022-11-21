@@ -62,7 +62,7 @@
       </div>
       <!--<video id="bgm" controls="true" autoplay="true" name="media" loop="true" hidden="true"> <source src="/source/bgm.mp3" type="audio/mpeg"></video>-->
       <a id="title">牌桌列表(<span id="number"></span>)</a>
-      <a href="/" class="chat">聊天室</a>
+      <a href="../" class="chat">聊天室</a>
       <div class="card">
         <div id="roomlist">
           <div class="list">
@@ -159,7 +159,8 @@
       {
         var sUserAgent = navigator.userAgent;
         if (sUserAgent.indexOf('Android') > -1 || sUserAgent.indexOf('iPhone') > -1 || sUserAgent.indexOf('iPad') > -1 || sUserAgent.indexOf('iPod') > -1 || sUserAgent.indexOf('Symbian') > -1) {
-            location.href = '../21pm';
+          alert('手机端尚未开发完捏。');
+          location.href = '../';
         }
         else {
           var socket = io();
@@ -169,7 +170,8 @@
       }
       //功能杂项
       window.onload=function(){ 
-        socket.emit('load','loading'); 
+        socket.emit('load','loading');
+        document.getElementById('loadingDiv').style.display='none'; 
       } 
       $(document).ready(function(){
         window.addEventListener('load', function() {
