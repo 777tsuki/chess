@@ -1,0 +1,36 @@
+body {
+    			
+    background-image: 
+    radial-gradient(circle,  
+        rgba(36, 36, 36, 1) 17%, 
+        rgba(36, 36, 36, 0) 17%, 
+        rgba(0, 0, 0, 0) 100%
+        ),
+    radial-gradient(circle, 
+        rgba(36, 36, 36, 1) 17%, 
+        rgba(36, 36, 36, 0) 17%, 
+        rgba(0, 0, 0, 0) 100%
+        ),
+    radial-gradient(circle, 
+        rgba(72, 72, 72, 1) 17%, 
+        rgba(72, 72, 72, 0) 17%, 
+        rgba(0, 0, 0, 0) 100%
+        ),
+    radial-gradient(circle, 
+        rgba(72, 72, 72, 1) 17%, 
+        rgba(72, 72, 72, 0) 17%, 
+        rgba(0, 0, 0, 0) 100%
+        ),
+    linear-gradient(90deg, 
+        rgba(36, 36, 36, 1) 25%, 
+        rgba(36, 36, 36, 0) 25%, 
+        rgba(255, 255, 255, 0) 55%, 
+        rgba(202, 202, 202, 1) 55%, 
+        rgba(202, 202, 202, 1) 70%, 
+        rgba(255, 255, 255, 0) 70%, 
+        rgba(255, 255, 255, 0) 100%
+        );
+        background-color:#603;
+        background-size: 100px 28px, 100px 28px,100px 28px, 100px 28px, 100px 100px;
+        background-position: 4px 0pt, 19px 14px, 5px 2px, 19px 16px, 0 0;
+}

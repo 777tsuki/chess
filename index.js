@@ -181,7 +181,8 @@ function room_getlist(userid) {
           let observe=await redis.hGet(i,'observe');
           let ico=await redis.hGet(i,'ico');
           let name=await redis.hGet(i,'name');
-          io.in(userid).emit('room','list',i,host,amount.length,observe,ico,name);
+          let stats=await redis.hGet(i,'stats');
+          io.in(userid).emit('room','list',i,host,amount.length,observe,ico,name,stats);
         }
       });
     }

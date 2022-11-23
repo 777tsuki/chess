@@ -1,0 +1,10 @@
+body {
+    background-color:rgb(255, 220, 220);
+    background-image:
+    radial-gradient(circle at 100% 150%, rgb(255, 220, 220) 24%, white 24%, white 28%, rgb(255, 220, 220) 28%, rgb(255, 220, 220) 36%, white 36%, white 40%, transparent 40%, transparent),
+    radial-gradient(circle at 0    150%, rgb(255, 220, 220) 24%, white 24%, white 28%, rgb(255, 220, 220) 28%, rgb(255, 220, 220) 36%, white 36%, white 40%, transparent 40%, transparent),
+    radial-gradient(circle at 50%  100%, white 10%, rgb(255, 220, 220) 10%, rgb(255, 220, 220) 23%, white 23%, white 30%, rgb(255, 220, 220) 30%, rgb(255, 220, 220) 43%, white 43%, white 50%, rgb(255, 220, 220) 50%, rgb(255, 220, 220) 63%, white 63%, white 71%, transparent 71%, transparent),
+    radial-gradient(circle at 100% 50%, white 5%, rgb(255, 220, 220) 5%, rgb(255, 220, 220) 15%, white 15%, white 20%, rgb(255, 220, 220) 20%, rgb(255, 220, 220) 29%, white 29%, white 34%, rgb(255, 220, 220) 34%, rgb(255, 220, 220) 44%, white 44%, white 49%, transparent 49%, transparent),
+    radial-gradient(circle at 0    50%, white 5%, rgb(255, 220, 220) 5%, rgb(255, 220, 220) 15%, white 15%, white 20%, rgb(255, 220, 220) 20%, rgb(255, 220, 220) 29%, white 29%, white 34%, rgb(255, 220, 220) 34%, rgb(255, 220, 220) 44%, white 44%, white 49%, transparent 49%, transparent);
+    background-size: 200px 100px;
+}

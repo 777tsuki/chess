@@ -128,8 +128,8 @@
     </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="/source/js/bar.js"></script>
-    <script src="/source/js/vue.js"></script>
     <script src="/source/js/jq.js"></script>
+    <script src="/source/js/background.js"></script>
     <script>
       var width1=0,width2=0;
       var messages = document.getElementById('messages');
@@ -216,7 +216,7 @@
           inRoom(inputname.value);
           modal.style.display = "none";
           inputname.value="";
-          opAdd('加入牌局',"sitDown()",'add');
+          opAdd('加入牌局',"sitDown()");
         }
       }
       //信息接收部分
@@ -241,12 +241,14 @@
       socket.on('number', function(value) {
         document.getElementById('number').innerText=value;
       });
-      socket.on('room', function(action,id,host,amount,observe,ico,name) {
+      socket.on('room', function(action,id,host,amount,observe,ico,name,stats) {
         switch (action) {
           case 'list':
             func="joinTo("+id+",'21p','"+name+"')";
             observe=(observe==1)?'on':'off';
-            document.getElementById('roomlist').innerHTML+='<div class="list" onclick='+func+'><img src="source/list/'+ico+'.webp" height="111px" style="margin:10px 0 10px 10px"><a class="headtext" style="font-size:'+innerWidth/49+'px;left:5px">'+name+'(<span id='+id+'>'+amount+'</span>)</a><br><span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:'+host+'</span><br><span style="position:relative;left:127px;top:-60px;color:rgb(50, 188, 75)"><img src="source/svg/waiting.svg" width="20px"><span style="position:relative;top:-1.5px">等待中</span></span><span style="position:relative;left:133px;top:-60px;"><img src="source/svg/'+observe+'.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span></div>';
+            state=(stats=='watting')?'等待中':'游戏中';
+            status=(stats=='watting')?'watting':'playing'
+            document.getElementById('roomlist').innerHTML+='<div class="list" onclick='+func+'><img src="source/list/'+ico+'.webp" height="111px" style="margin:10px 0 10px 10px"><a class="headtext" style="font-size:'+innerWidth/49+'px;left:5px">'+name+'(<span id='+id+'>'+amount+'</span>)</a><br><span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:'+host+'</span><br><span style="position:relative;left:127px;top:-60px;color:rgb(90, 95, 255)"><img src="source/svg/'+status+'.svg" width="20px"><span style="position:relative;top:-1.5px">'+state+'</span></span><span style="position:relative;left:133px;top:-60px;"><img src="source/svg/'+observe+'.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span></div>';
             break;
           case 'close':
             alert('牌桌已解散');
@@ -301,7 +303,7 @@
                 }
                 else {
                   document.getElementById('name2').innerText=player1;
-                  opAdd('加入牌局',"sitDown()",'add');
+                  opAdd('加入牌局',"sitDown()");
                 }
                 break;
               case '3':
@@ -378,26 +380,12 @@
                 setTimeout(()=>{
                   $('#resultbox').click(()=>{$('#resultbox').css('display','none');})
                   $('#resultbox').css('display','block');
-                  $('.card-filp').css('display','none');
                   $('#name1').text('玩家');
                   $('#name2').text('玩家');
-                  $(".acard").remove();
-                  $("#m2").remove();
-                  $("#y2").remove();
-                  opAdd('加入牌局',"sitDown()");
-                  $("#yoursecret").css('transform','');
-                  $("#mysecret").css('transform','');
+                  opAdd('加入牌局',"roomClear()");
                 },1500);
               },1500);
             }, 1000);
-            //alert(((option=='1')?player1:player2)+'获胜。');
-            /*document.querySelector('.card-filp').style.display='none';
-            document.getElementById('name1').innerText='玩家';
-            document.getElementById('name2').innerText='玩家';
-            $(".acard").remove();
-            $(".m2").remove();
-            $(".y2").remove();
-            opAdd('加入牌局',"sitDown()");*/
             break;
         }
       });
@@ -491,6 +479,15 @@
         else $('#resultimg').attr('src',(option==player)?'/source/result/winner.webp':'/source/result/loser.webp');
         if (option=='0') $('#resultword').text('DRAW');
         else $('#resultword').text((option==player)?'WINNER':'LOSER');
+      }
+      function roomClear() {
+        $('.card-filp').css('display','none');
+        $(".acard").remove();
+        $("#m2").remove();
+        $("#y2").remove();
+        $("#yoursecret").css('transform','');
+        $("#mysecret").css('transform','');
+        sitDown();
       }
     </script>
   </body>
