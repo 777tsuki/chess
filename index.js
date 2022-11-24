@@ -142,10 +142,20 @@ io.use((socket, next) => {
   setTimeout(() => {
     next(/*console.log(6)*/);
   }, 1);
-  socket.on('disconnect', () => {
+  socket.on('disconnect', async () => {
     if (socket.data.room!=undefined) {
-      amount(socket.data.room);
-      socket.leave(socket.data.room);
+      await socket.leave(socket.data.room);
+      if (socket.data.room!='main' && socket.data.room!='list') {
+        let sockets = await io.in(socket.data.room).fetchSockets();
+        if (sockets==0) {
+          let host = await redis.hGet(socket.data.room,'host')
+          if (host!=undefined) {
+            await redis.hDel('hoster',host);
+            await redis.del(socket.data.room);
+          }
+        }
+        else await amount(socket.data.room);
+      }
     }
   });
 });

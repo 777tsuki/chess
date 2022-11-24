@@ -69,7 +69,7 @@
             <img src="source/list/0.webp" height="111px" style="margin:10px 0 10px 10px">
             <a class="headtext" v-bind:style="fontsize">bt233的牌桌(<span id='0'>2</span>)</a><br>
             <span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:bt233</span><br>
-            <span style="position:relative;left:127px;top:-60px;color:rgb(50, 188, 75)"><img src="source/svg/waiting.svg" width="20px"><span style="position:relative;top:-1.5px">等待中</span></span>
+            <span style="position:relative;left:127px;top:-60px;color:rgb(50, 188, 75)"><img src="source/svg/waitting.svg" width="20px"><span style="position:relative;top:-1.5px">等待中</span></span>
             <span style="position:relative;left:127px;top:-60px;"><img src="source/svg/off.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span>
           </div>
           <div class="list">
@@ -84,7 +84,7 @@
       </div>
       <div class="main">
         <a id="headline">
-          <span id="roomid" class="" style="margin:0px 10px" onclick="does('leave')">离开</span>
+          <span id="roomid" class="" style="margin:0px 10px" onmousedown="does('leave')" onmouseup="clearTimeout(time)">离开</span>
         </a>
         <div class="msgbox">
           <ul id="messages"><span class="blank"></span></ul>
@@ -148,6 +148,7 @@
       var modal = document.getElementById('Modal');
       var inputname = document.getElementById('inputname');
       var check = document.getElementById('check');
+      var time;
       //初始加载项
       document.getElementById('username').innerText = getCookie('username');
       //document.getElementById("bgm").volume = 0.3;
@@ -166,12 +167,10 @@
           var socket = io();
           joinTo('list','normal');
           socket.emit('room','getlist');
+          socket.emit('load','loading');
         }
       }
       //功能杂项
-      window.onload=function(){ 
-        socket.emit('load','loading'); 
-      } 
       $(document).ready(function(){
         window.addEventListener('load', function() {
           $('.headtext').css('font-size',innerWidth/49+'px');
@@ -246,9 +245,7 @@
           case 'list':
             func="joinTo("+id+",'21p','"+name+"')";
             observe=(observe==1)?'on':'off';
-            state=(stats=='watting')?'等待中':'游戏中';
-            status=(stats=='watting')?'watting':'playing'
-            document.getElementById('roomlist').innerHTML+='<div class="list" onclick='+func+'><img src="source/list/'+ico+'.webp" height="111px" style="margin:10px 0 10px 10px"><a class="headtext" style="font-size:'+innerWidth/49+'px;left:5px">'+name+'(<span id='+id+'>'+amount+'</span>)</a><br><span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:'+host+'</span><br><span style="position:relative;left:127px;top:-60px;color:rgb(90, 95, 255)"><img src="source/svg/'+status+'.svg" width="20px"><span style="position:relative;top:-1.5px">'+state+'</span></span><span style="position:relative;left:133px;top:-60px;"><img src="source/svg/'+observe+'.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span></div>';
+            document.getElementById('roomlist').innerHTML+='<div class="list" onclick='+func+'><img src="source/list/'+ico+'.webp" height="111px" style="margin:10px 0 10px 10px"><a class="headtext" style="font-size:'+innerWidth/49+'px;left:5px">'+name+'(<span id='+id+'>'+amount+'</span>)</a><br><span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:'+host+'</span><br><span style="position:relative;left:127px;top:-60px;color:'+((stats=='waitting')?'rgb(50, 188, 75)':'rgb(90, 95, 255)')+'"><img src="source/svg/'+((stats=='waitting')?'waitting':'playing')+'.svg" width="20px"><span style="position:relative;top:-1.5px">'+((stats=='waitting')?'等待中':'游戏中')+'</span></span><span style="position:relative;left:133px;top:-60px;"><img src="source/svg/'+observe+'.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span></div>';
             break;
           case 'close':
             alert('牌桌已解散');
@@ -264,7 +261,7 @@
             document.getElementById('roomid').className=id;
             if (host=='true') {//你是不是房主
               func="does('close')";
-              document.getElementById('headline').innerHTML+='<span style="margin:0px 10px" onclick="'+func+'">解散</span>';
+              document.getElementById('headline').innerHTML+='<span style="margin:0px 10px" onmousedown="'+func+'" onmouseup="clearTimeout(time)">解散</span>';
             }
             break;
         }
@@ -403,11 +400,15 @@
       function does(action) {
         switch (action) {
           case 'leave':
-            location.reload();
+            time=setTimeout(()=>{
+              location.reload();
+            },1000)
             break;
           case 'close':
-            socket.emit('room','close',document.getElementById('roomid').className,getCookie('username'));
-            location.reload();
+            time=setTimeout(()=>{
+              socket.emit('room','close',document.getElementById('roomid').className,getCookie('username'));
+              location.reload();
+            },1000)
             break;
           case 'accept':
             opAdd('等待中',"alert('我知道你很急，但你先别急。')",'no');
