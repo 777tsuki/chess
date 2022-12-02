@@ -16,17 +16,6 @@ redis.connect();
   console.log(err)
 })*/
 
-app.get('/', (req, res) => {
-  res.sendFile(__dirname + '/main.html');
-});
-app.get('/21p', (req, res) => {
-  res.sendFile(__dirname + '/21p.html');
-});
-app.get('/21pm', (req, res) => {
-  res.sendFile(__dirname + '/21pm.html');
-});
-
-source();
 beginning();
 
 io.on('connection', (socket) => {//这块比较乱，已经尽量在简写了（笑）
@@ -164,14 +153,14 @@ server.listen(2053, () => {
   console.log('listening on *:2053');
 });
 
-function source() {
-  app.get('/psc', (req, res) => {
-    const num=Math.round(Math.random()*5);//0开始，十个图，前六小，后四大
-    res.sendFile(__dirname + '/psc/psc/psc ('+num+').webp');
+function beginning() {
+  app.get('/', (req, res) => {
+    res.sendFile(__dirname + '/main.html');
+  });
+  app.get('/21p', (req, res) => {
+    res.sendFile(__dirname + '/21p.html');
   });
   app.use('/source', express.static('psc'));
-}
-function beginning() {
   io.emit('some event', { someProperty: 'some value', otherProperty: 'other value' });
   redis.hSet('list',{
     'host':'host',
@@ -181,30 +170,28 @@ function beginning() {
   });
   redis.setNX('rooms','0');
 }
-function room_getlist(userid) {
-  rg('rooms').then(async (value)=>{
-    for (var i=1;i<=value;i++){
-      i+='';
-      await redis.hGet(i,'host').then(async (host)=>{
-        if (host!=undefined) {
-          let amount=await io.in(i).fetchSockets();
-          let observe=await redis.hGet(i,'observe');
-          let ico=await redis.hGet(i,'ico');
-          let name=await redis.hGet(i,'name');
-          let stats=await redis.hGet(i,'stats');
-          io.in(userid).emit('room','list',i,host,amount.length,observe,ico,name,stats);
-        }
-      });
+async function room_getlist(userid) {
+  let value = await redis.get('rooms');
+  for (var i=1;i<=value;i++){
+    i+='';
+    let host = await redis.hGet(i,'host');
+    if (host != undefined) {
+      let amount = await io.in(i).fetchSockets();
+      let observe = await redis.hGet(i,'observe');
+      let ico = await redis.hGet(i,'ico');
+      let name = await redis.hGet(i,'name');
+      let stats = await redis.hGet(i,'stats');
+      io.in(userid).emit('room','list',i,host,amount.length,observe,ico,name,stats);
     }
-  });
+  }
 }
 async function getid(id,username) {
-  var result=[];
+  var result = [];
   await rg('rooms').then(async (value)=>{
-    while (id<=value+1) {
+    while (id <= value+1) {
       await redis.hGet(id+'','host').then((host)=>{
-        id=Number(id);
-        if (host==undefined) {
+        id = Number(id);
+        if (host == undefined) {
           result.push(id);
         }
       });
@@ -215,20 +202,20 @@ async function getid(id,username) {
 }
 async function card_join(room,name,id) {
   room+='';
-  var player1=await redis.hGet(room,'player1');
-  var player2=await redis.hGet(room,'player2');
-  if (player2==undefined) {
-    if (player1==undefined) {
+  var player1 = await redis.hGet(room,'player1');
+  var player2 = await redis.hGet(room,'player2');
+  if (player2 == undefined) {
+    if (player1 == undefined) {
       await redis.hSet(room,'player1',name);
       io.to(room).except(id).emit('card','join',name);
     }
     else {
-      let nn=Math.round(Math.random()+1);
-      let observe=await redis.hGet(room,'observe');
-      let a1=await card_add(room);
-      let b1=await card_add(room);
-      let a2=await card_add(room);
-      let b2=await card_add(room);
+      let nn = Math.round(Math.random()+1);
+      let observe = await redis.hGet(room,'observe');
+      let a1 = await card_add(room);
+      let b1 = await card_add(room);
+      let a2 = await card_add(room);
+      let b2 = await card_add(room);
       io.in(room).emit('card','start',player1,name,observe,nn,a1,b1,a2,b2);
       await redis.hSet(room,{
         'player2':name,

@@ -143,8 +143,8 @@ input:checked + .slider:before {
 	font-size: 26px;
 	letter-spacing: 1px;
 	background: #e55743;
-	-webkit-mask: url('/source/nature-sprite.webp');
-	mask: url('/source/nature-sprite.webp');
+	-webkit-mask: url('http://bt233.top/resource/nature-sprite.webp');
+	mask: url('http://bt233.top/resource/nature-sprite.webp');
 	-webkit-mask-size: 2300% 100%;
 	mask-size: 2300% 100%;
 	border: none;
