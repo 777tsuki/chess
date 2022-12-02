@@ -2,13 +2,13 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <link rel="stylesheet" type="text/css" href="/source/css/loading.css">
+    <link rel="stylesheet" type="text/css" href="source/css/loading.css">
     <link rel="preload" href="/source/seto.woff2" as="font" type="font/woff2" crossorigin="">
     <meta name="viewport" content="initial-scale=1,user-scalable=no">
-    <link rel="shortcut icon" href="http://bt233.top/resource/svg/logo.svg">
+    <link rel="shortcut icon" href="/source/svg/logo.svg">
     <title>BT的聊天室</title>
-    <link rel="stylesheet" type="text/css" href="/source/css/21p.css">
-    <link rel="stylesheet" type="text/css" href="/source/css/21p.ex.css">
+    <link rel="stylesheet" type="text/css" href="source/css/21p.css">
+    <link rel="stylesheet" type="text/css" href="source/css/21p.ex.css">
   </head>
   <body>
     <div id="loadingDiv" style="height:1024px;position:absolute;left:0;width:100%;top:0;background:#eaecfa;z-index:10000;">
@@ -26,7 +26,7 @@
     </div>
     <div id="resultbox" style="height:1024px;position:absolute;left:0;width:100%;top:0;background-color:#fcf3ec82;z-index:100;display:none">
       <div class="maintain" style="width:500px">
-        <img id="resultimg" src="http://bt233.top/resource/result/winner.webp" style="height:450px;position:relative;top:-150px;">
+        <img id="resultimg" src="/source/result/winner.webp" style="height:450px;position:relative;top:-150px;">
       </div>
       <h1 id="resultword" class="maintain" style="font-size:80px;top:50%;color:#ee6d6d;width:500px">WINNER</h1>
     </div>
@@ -51,27 +51,27 @@
             </div>
             <div class="mask"></div>
           </div>
-          <img id="imgop" src="http://bt233.top/resource/list/0.webp" height="111px" style="position:absolute;top:95px;left:80px">
+          <img id="imgop" src="/source/list/0.webp" height="111px" style="position:absolute;top:95px;left:80px">
         </div>
       </div>
-      <!--<video id="bgm" controls="true" autoplay="true" name="media" loop="true" hidden="true"> <source src="http://bt233.top/resource/bgm.mp3" type="audio/mpeg"></video>-->
+      <!--<video id="bgm" controls="true" autoplay="true" name="media" loop="true" hidden="true"> <source src="/source/bgm.mp3" type="audio/mpeg"></video>-->
       <a id="title">牌桌列表(<span id="number"></span>)</a>
       <a href="../" class="chat">聊天室</a>
       <div class="card">
         <div id="roomlist">
           <div class="list">
-            <img src="http://bt233.top/resource/list/0.webp" height="111px" style="margin:10px 0 10px 10px">
+            <img src="source/list/0.webp" height="111px" style="margin:10px 0 10px 10px">
             <a class="headtext" v-bind:style="fontsize">bt233的牌桌(<span id='0'>2</span>)</a><br>
             <span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:bt233</span><br>
-            <span style="position:relative;left:127px;top:-60px;color:rgb(50, 188, 75)"><img src="http://bt233.top/resource/svg/waitting.svg" width="20px"><span style="position:relative;top:-1.5px">等待中</span></span>
-            <span style="position:relative;left:127px;top:-60px;"><img src="http://bt233.top/resource/svg/off.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span>
+            <span style="position:relative;left:127px;top:-60px;color:rgb(50, 188, 75)"><img src="source/svg/waitting.svg" width="20px"><span style="position:relative;top:-1.5px">等待中</span></span>
+            <span style="position:relative;left:127px;top:-60px;"><img src="source/svg/off.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span>
           </div>
           <div class="list">
-            <img src="http://bt233.top/resource/list/9.webp" height="111px" style="margin:10px 0 10px 10px">
+            <img src="source/list/9.webp" height="111px" style="margin:10px 0 10px 10px">
             <a class="headtext" v-bind:style="fontsize">苏维埃社会主义同盟(<span id='0'>457</span>)</a><br>
             <span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:列大林</span><br>
-            <span style="position:relative;left:127px;top:-60px;color:rgb(90, 95, 255)"><img src="http://bt233.top/resource/svg/playing.svg" width="20px"><span style="position:relative;top:-1.5px">游戏中</span></span>
-            <span style="position:relative;left:127px;top:-60px;"><img src="http://bt233.top/resource/svg/on.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span>
+            <span style="position:relative;left:127px;top:-60px;color:rgb(90, 95, 255)"><img src="source/svg/playing.svg" width="20px"><span style="position:relative;top:-1.5px">游戏中</span></span>
+            <span style="position:relative;left:127px;top:-60px;"><img src="source/svg/on.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span>
           </div>
         </div>
         <a id="create">新建牌桌</a>
@@ -95,10 +95,10 @@
           <div class="cards" style="animation:appear 0.5s 1;">
             <div id="yoursecret" class="card-filp" style="display:none">
               <div class="font">
-                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225"></a><img src="http://bt233.top/resource/card/0.webp" style="position:relative;height:145px;top:-4px;left:-10px"></div>
+                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225"></a><img src="/source/card/0.webp" style="position:relative;height:145px;top:-4px;left:-10px"></div>
               </div>
               <div class="back">
-                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a id="num3" style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">7</a><img id="num4" src="http://bt233.top/resource/card/7.webp" style="position:relative;height:300px;left:-30px;"></div>
+                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a id="num3" style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">7</a><img id="num4" src="/source/card/7.webp" style="position:relative;height:300px;left:-30px;"></div>
               </div>
             </div>
           </div>
@@ -108,10 +108,10 @@
           <div class="cards" style="animation:appear 0.5s 1;">
             <div id="mysecret" class="card-filp" style="display:none">
               <div class="font">
-                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225"></a><img src="http://bt233.top/resource/card/0.webp" style="position:relative;height:145px;top:-4px;left:-10px"></div>
+                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225"></a><img src="/source/card/0.webp" style="position:relative;height:145px;top:-4px;left:-10px"></div>
               </div>
               <div class="back">
-                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a id="num1" style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">7</a><img id="num2" src="http://bt233.top/resource/card/7.webp" style="position:relative;height:300px;left:-30px;"></div>
+                <div style="background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a id="num1" style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">7</a><img id="num2" src="/source/card/7.webp" style="position:relative;height:300px;left:-30px;"></div>
               </div>
             </div>
           </div>
@@ -121,9 +121,9 @@
       </div>
     </div>
     <script src="/socket.io/socket.io.js"></script>
-    <script src="http://bt233.top/resource/js/bar.js"></script>
-    <script src="http://bt233.top/resource/js/jq.js"></script>
-    <script src="http://bt233.top/resource/js/background.js"></script>
+    <script src="/source/js/bar.js"></script>
+    <script src="/source/js/jq.js"></script>
+    <script src="/source/js/background.js"></script>
     <script>
       var width1=0,width2=0;
       var messages = document.getElementById('messages');
@@ -239,7 +239,7 @@
           case 'list':
             func="joinTo("+id+",'21p','"+name+"')";
             observe=(observe==1)?'on':'off';
-            document.getElementById('roomlist').innerHTML+='<div class="list" onclick='+func+'><img src="http://bt233.top/resource/list/'+ico+'.webp" height="111px" style="margin:10px 0 10px 10px"><a class="headtext" style="font-size:'+innerWidth/49+'px;left:5px">'+name+'(<span id='+id+'>'+amount+'</span>)</a><br><span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:'+host+'</span><br><span style="position:relative;left:127px;top:-60px;color:'+((stats=='waitting')?'rgb(50, 188, 75)':'rgb(90, 95, 255)')+'"><img src="http://bt233.top/resource/svg/'+((stats=='waitting')?'waitting':'playing')+'.svg" width="20px"><span style="position:relative;top:-1.5px">'+((stats=='waitting')?'等待中':'游戏中')+'</span></span><span style="position:relative;left:133px;top:-60px;"><img src="http://bt233.top/resource/svg/'+observe+'.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span></div>';
+            document.getElementById('roomlist').innerHTML+='<div class="list" onclick='+func+'><img src="source/list/'+ico+'.webp" height="111px" style="margin:10px 0 10px 10px"><a class="headtext" style="font-size:'+innerWidth/49+'px;left:5px">'+name+'(<span id='+id+'>'+amount+'</span>)</a><br><span style="font-size:20px;position:relative;left:127px;top:-70px;color:rgb(255, 255, 255)">牌主:'+host+'</span><br><span style="position:relative;left:127px;top:-60px;color:'+((stats=='waitting')?'rgb(50, 188, 75)':'rgb(90, 95, 255)')+'"><img src="source/svg/'+((stats=='waitting')?'waitting':'playing')+'.svg" width="20px"><span style="position:relative;top:-1.5px">'+((stats=='waitting')?'等待中':'游戏中')+'</span></span><span style="position:relative;left:133px;top:-60px;"><img src="source/svg/'+observe+'.svg" width="20px"><span style="position:relative;top:-2px">旁观</span></span></div>';
             break;
           case 'close':
             alert('牌桌已解散');
@@ -350,12 +350,12 @@
             opAdd('揭晓结果……',"");
             if (player1==getCookie('username')) {
               $('#num3').text(b1);
-              $('#num4').attr('src','http://bt233.top/resource/card/'+b1+'.webp');
+              $('#num4').attr('src','/source/card/'+b1+'.webp');
               result(option,'1');
             }
             else if (player2==getCookie('username')) {
               $('#num3').text(a1);
-              $('#num4').attr('src','http://bt233.top/resource/card/'+a1+'.webp');
+              $('#num4').attr('src','/source/card/'+a1+'.webp');
               result(option,'2');
             }
             else {}
@@ -439,11 +439,11 @@
       }
       function cardAdd(type,to,r,tip) {
         $('.cards').css('animation','');
-        document.getElementById(to).innerHTML+='<div id="'+tip+'" class="cards acard" style="z-index:100;animation:appear 0.5s 1;position:relative;top:22px;margin-left:11.5px;background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">'+((type==0)?'':r)+'</a><img src="http://bt233.top/resource/card/'+((type==0)?'0':r)+'.webp" style="position:relative;'+(style=(type==0)?'height:145px;top:-4px;left:-10px':'height:300px;left:-30px;')+'"></div>';
+        document.getElementById(to).innerHTML+='<div id="'+tip+'" class="cards acard" style="z-index:100;animation:appear 0.5s 1;position:relative;top:22px;margin-left:11.5px;background-color:rgb(255, 241, 241);border:5px solid #c35a4c;border-radius:8px;height:150px;width:100px;overflow:hidden;"><a style="display:block;text-align:center;font-size:32px;margin-top:5px;color:#953225">'+((type==0)?'':r)+'</a><img src="/source/card/'+((type==0)?'0':r)+'.webp" style="position:relative;'+(style=(type==0)?'height:145px;top:-4px;left:-10px':'height:300px;left:-30px;')+'"></div>';
       }
       function start(m1,m2,y2,who) {
         document.getElementById('num1').innerText=m1;
-        document.getElementById('num2').setAttribute('src','http://bt233.top/resource/card/'+m1+'.webp');
+        document.getElementById('num2').setAttribute('src','/source/card/'+m1+'.webp');
         cardAdd(0,'mine',m1,'m1');
         document.getElementById('m1').addEventListener("animationend",()=>{
           document.getElementById('m1').remove();
@@ -464,8 +464,8 @@
         });
       }
       function result(option,player) {
-        if (option=='0') $('#resultimg').attr('src','http://bt233.top/resource/result/draw.webp');
-        else $('#resultimg').attr('src',(option==player)?'http://bt233.top/resource/result/winner.webp':'http://bt233.top/resource/result/loser.webp');
+        if (option=='0') $('#resultimg').attr('src','/source/result/draw.webp');
+        else $('#resultimg').attr('src',(option==player)?'/source/result/winner.webp':'/source/result/loser.webp');
         if (option=='0') $('#resultword').text('DRAW');
         else $('#resultword').text((option==player)?'WINNER':'LOSER');
       }

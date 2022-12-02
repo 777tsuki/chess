@@ -23,7 +23,7 @@ bar.onmousedown = function(event){
         // 显示百分比
         let num = parseInt(parseInt(that.style.left) / 150 * 9.9);
         demo.innerHTML=num;
-        imgop.src='http://bt233.top/resource/list/'+num+'.webp';
+        imgop.src='/source/list/'+num+'.webp';
         // 清除拖动 --- 防止鼠标已经弹起时还在拖动
         window.getSelection ? window.getSelection().removeAllRanges():document.selection.empty();
     }
